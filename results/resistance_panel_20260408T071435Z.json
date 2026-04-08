@@ -1,0 +1,120 @@
+{
+  "benchmark": "resistance_panel",
+  "environment": {
+    "timestamp_utc": "2026-04-08T07:14:35.480749+00:00",
+    "timestamp_local": "2026-04-08T03:14:35.480749",
+    "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Windows",
+    "os_version": "10.0.26200",
+    "node": "muntaserPC2024",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_bytes": 102764539904,
+    "ram_gb": 95.7,
+    "hashrope_version": "0.2.0",
+    "hashrope_bio_version": "0.1.0"
+  },
+  "results": [
+    {
+      "data_source": "synthetic",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 37893.108,
+      "hashrope_per_site_ns": 1647.5264347826087,
+      "baseline_total_ns": 2161.378,
+      "baseline_per_site_ns": 93.97295652173914,
+      "speedup": 0.05703881560731308,
+      "all_correct": true,
+      "details": "all correct"
+    },
+    {
+      "data_source": "synthetic_chunked_64",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 63018.556,
+      "hashrope_per_site_ns": 2739.9372173913043,
+      "baseline_total_ns": 2160.658,
+      "baseline_per_site_ns": 93.94165217391304,
+      "speedup": 0.034286060124894005,
+      "all_correct": true,
+      "details": "chunk_size=64"
+    },
+    {
+      "data_source": "synthetic_chunked_256",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 51346.096,
+      "hashrope_per_site_ns": 2232.438956521739,
+      "baseline_total_ns": 2078.072,
+      "baseline_per_site_ns": 90.35095652173914,
+      "speedup": 0.04047185982747355,
+      "all_correct": true,
+      "details": "chunk_size=256"
+    },
+    {
+      "data_source": "hiv1_hxb2_rt",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 38647.178,
+      "hashrope_per_site_ns": 1680.3120869565216,
+      "baseline_total_ns": 2113.88,
+      "baseline_per_site_ns": 91.90782608695653,
+      "speedup": 0.0546968785146486,
+      "all_correct": true,
+      "details": "all correct"
+    },
+    {
+      "data_source": "hiv1_hxb2_rt_chunked_64",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 62327.148,
+      "hashrope_per_site_ns": 2709.876,
+      "baseline_total_ns": 2161.81,
+      "baseline_per_site_ns": 93.99173913043478,
+      "speedup": 0.034684885629613596,
+      "all_correct": true,
+      "details": "chunk_size=64"
+    },
+    {
+      "data_source": "hiv1_hxb2_rt_chunked_256",
+      "gene_length_bp": 1680,
+      "panel_size": 23,
+      "mutations_introduced": 2,
+      "mutations_detected": 2,
+      "hashrope_total_ns": 51073.73,
+      "hashrope_per_site_ns": 2220.5969565217392,
+      "baseline_total_ns": 2069.662,
+      "baseline_per_site_ns": 89.98530434782607,
+      "speedup": 0.040523024263158375,
+      "all_correct": true,
+      "details": "chunk_size=256"
+    }
+  ],
+  "config": {
+    "warmup_iters": 500,
+    "timing_iters": 50000,
+    "panel_sites": 23,
+    "panel_nnrti": 12,
+    "panel_nrti": 11,
+    "mutation_positions": [
+      103,
+      184
+    ],
+    "hiv_rt_start_0based": 2549,
+    "hiv_rt_end_exclusive": 4229,
+    "hash_base": 131,
+    "hash_prime": "2305843009213693951"
+  }
+}

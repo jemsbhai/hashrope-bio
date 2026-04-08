@@ -1,0 +1,114 @@
+{
+  "benchmark": "construction_rust",
+  "environment": {
+    "timestamp_unix": "1775658196",
+    "os": "windows",
+    "arch": "x86_64",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_gb": "95.7",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+    "hashrope_crate_version": "0.2.1",
+    "hashrope_bio_crate_version": "0.1.0",
+    "language": "rust",
+    "build_profile": "release"
+  },
+  "config": {
+    "fasta": "../data/chr22.fa",
+    "seq_name": "chr22",
+    "seq_len": 50818468,
+    "chunk_sizes": [256, 1024, 4096, 16384],
+    "amort_query_len": 10000,
+    "amort_query_iters": 100000,
+    "amort_warmup": 10000,
+    "hash_base": 131,
+    "hash_prime": 2305843009213693951
+  },
+  "construction_results": [
+    {
+      "chunk_size": 256,
+      "seq_len": 50818468,
+      "leaves": 198510,
+      "internals": 198509,
+      "total_reachable_nodes": 397019,
+      "arena_total_nodes": 4319997,
+      "height": 22,
+      "construction_time_s": 0.493075,
+      "throughput_mbs": 98.29,
+      "hash_verified": true
+    },
+    {
+      "chunk_size": 1024,
+      "seq_len": 50818468,
+      "leaves": 49628,
+      "internals": 49627,
+      "total_reachable_nodes": 99255,
+      "arena_total_nodes": 955916,
+      "height": 19,
+      "construction_time_s": 0.282012,
+      "throughput_mbs": 171.85,
+      "hash_verified": true
+    },
+    {
+      "chunk_size": 4096,
+      "seq_len": 50818468,
+      "leaves": 12407,
+      "internals": 12406,
+      "total_reachable_nodes": 24813,
+      "arena_total_nodes": 207940,
+      "height": 17,
+      "construction_time_s": 0.248821,
+      "throughput_mbs": 194.78,
+      "hash_verified": true
+    },
+    {
+      "chunk_size": 16384,
+      "seq_len": 50818468,
+      "leaves": 3102,
+      "internals": 3101,
+      "total_reachable_nodes": 6203,
+      "arena_total_nodes": 44217,
+      "height": 14,
+      "construction_time_s": 0.249992,
+      "throughput_mbs": 193.86,
+      "hash_verified": true
+    }
+  ],
+  "amortization_results": [
+    {
+      "chunk_size": 256,
+      "construction_time_s": 0.493075,
+      "query_len": 10000,
+      "hashrope_query_ns": 1332.07,
+      "baseline_hash_ns": 43482.24,
+      "saving_per_query_ns": 42150.17,
+      "amortization_queries": 11699
+    },
+    {
+      "chunk_size": 1024,
+      "construction_time_s": 0.282012,
+      "query_len": 10000,
+      "hashrope_query_ns": 3562.63,
+      "baseline_hash_ns": 43413.71,
+      "saving_per_query_ns": 39851.08,
+      "amortization_queries": 7077
+    },
+    {
+      "chunk_size": 4096,
+      "construction_time_s": 0.248821,
+      "query_len": 10000,
+      "hashrope_query_ns": 8113.14,
+      "baseline_hash_ns": 43835.16,
+      "saving_per_query_ns": 35722.01,
+      "amortization_queries": 6966
+    },
+    {
+      "chunk_size": 16384,
+      "construction_time_s": 0.249992,
+      "query_len": 10000,
+      "hashrope_query_ns": 44243.31,
+      "baseline_hash_ns": 43386.38,
+      "saving_per_query_ns": -856.93,
+      "amortization_queries": -1
+    }
+  ]
+}

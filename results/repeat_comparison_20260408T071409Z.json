@@ -1,0 +1,177 @@
+{
+  "benchmark": "repeat_comparison",
+  "environment": {
+    "timestamp_utc": "2026-04-08T07:14:09.543620+00:00",
+    "timestamp_local": "2026-04-08T03:14:09.543620",
+    "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Windows",
+    "os_version": "10.0.26200",
+    "node": "muntaserPC2024",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_bytes": 102764539904,
+    "ram_gb": 95.7,
+    "hashrope_version": "0.2.0",
+    "hashrope_bio_version": "0.1.0"
+  },
+  "results": [
+    {
+      "motif": "CAG",
+      "q1": 35,
+      "q2": 35,
+      "hash_compare_ns": 18.643,
+      "byte_compare_ns": 19.2,
+      "identical": true
+    },
+    {
+      "motif": "CAG",
+      "q1": 35,
+      "q2": 36,
+      "hash_compare_ns": 17.3,
+      "byte_compare_ns": 16.75,
+      "identical": false
+    },
+    {
+      "motif": "CAG",
+      "q1": 35,
+      "q2": 40,
+      "hash_compare_ns": 17.386,
+      "byte_compare_ns": 17.06,
+      "identical": false
+    },
+    {
+      "motif": "CAG",
+      "q1": 36,
+      "q2": 36,
+      "hash_compare_ns": 19.191,
+      "byte_compare_ns": 19.81,
+      "identical": true
+    },
+    {
+      "motif": "CAG",
+      "q1": 36,
+      "q2": 70,
+      "hash_compare_ns": 18.148,
+      "byte_compare_ns": 17.27,
+      "identical": false
+    },
+    {
+      "motif": "CAG",
+      "q1": 10,
+      "q2": 10,
+      "hash_compare_ns": 18.766,
+      "byte_compare_ns": 20.3,
+      "identical": true
+    },
+    {
+      "motif": "CAG",
+      "q1": 100,
+      "q2": 100,
+      "hash_compare_ns": 18.708,
+      "byte_compare_ns": 24.11,
+      "identical": true
+    },
+    {
+      "motif": "CAG",
+      "q1": 100,
+      "q2": 2000,
+      "hash_compare_ns": 17.443,
+      "byte_compare_ns": 16.59,
+      "identical": false
+    },
+    {
+      "motif": "CAG",
+      "q1": 2000,
+      "q2": 2000,
+      "hash_compare_ns": 17.702,
+      "byte_compare_ns": 538.36,
+      "identical": true
+    }
+  ],
+  "config": {
+    "repeat_counts": [
+      5,
+      10,
+      20,
+      35,
+      50,
+      100,
+      200,
+      500,
+      1000,
+      2000,
+      5000,
+      10000
+    ],
+    "warmup_iters": 100,
+    "timing_iters": 10000,
+    "comparison_iters": 100000,
+    "naive_max_q": 100000,
+    "hash_base": 131,
+    "hash_prime": "2305843009213693951",
+    "clinical_loci": {
+      "HTT": {
+        "motif": "CAG",
+        "normal_range": [
+          10,
+          35
+        ],
+        "pathogenic_threshold": [
+          36,
+          null
+        ],
+        "disease": "Huntington's disease"
+      },
+      "FMR1": {
+        "motif": "CGG",
+        "normal_range": [
+          5,
+          44
+        ],
+        "pathogenic_threshold": [
+          200,
+          null
+        ],
+        "disease": "Fragile X syndrome"
+      },
+      "ATXN1": {
+        "motif": "CAG",
+        "normal_range": [
+          6,
+          35
+        ],
+        "pathogenic_threshold": [
+          39,
+          null
+        ],
+        "disease": "Spinocerebellar ataxia type 1"
+      },
+      "ATXN3": {
+        "motif": "CAG",
+        "normal_range": [
+          12,
+          40
+        ],
+        "pathogenic_threshold": [
+          55,
+          null
+        ],
+        "disease": "Machado-Joseph disease"
+      },
+      "DMPK": {
+        "motif": "CTG",
+        "normal_range": [
+          5,
+          34
+        ],
+        "pathogenic_threshold": [
+          50,
+          null
+        ],
+        "disease": "Myotonic dystrophy type 1"
+      }
+    }
+  }
+}

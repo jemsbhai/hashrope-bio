@@ -1,0 +1,113 @@
+{
+  "benchmark": "mutation_localization_rust",
+  "environment": {
+    "timestamp_unix": "1775665852",
+    "os": "windows",
+    "arch": "x86_64",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_gb": "95.7",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+    "hashrope_crate_version": "0.2.1",
+    "language": "rust",
+    "build_profile": "release"
+  },
+  "config": {
+    "fasta": "../data/chr22.fa",
+    "seq_name": "chr22",
+    "seq_len": 50818468,
+    "valid_nucleotides": 39159777,
+    "non_acgt_count": 11658691,
+    "chunk_size": 256,
+    "region_sizes": [1000, 10000, 100000, 1000000, 10000000, 50818468],
+    "trials_per_size": 100,
+    "rng_seed": 42,
+    "hash_base": 131,
+    "hash_prime": 2305843009213693951
+  },
+  "results": [
+    {
+      "region_size": 1000,
+      "trials": 100,
+      "expected_comparisons": 10,
+      "median_comparisons": 10,
+      "median_search_ns": 9850.0,
+      "p5_search_ns": 7800.0,
+      "p95_search_ns": 11000.0,
+      "median_linear_ns": 200.0,
+      "p5_linear_ns": 100.0,
+      "p95_linear_ns": 400.0,
+      "speedup_median": 0.02,
+      "all_correct": true
+    },
+    {
+      "region_size": 10000,
+      "trials": 100,
+      "expected_comparisons": 14,
+      "median_comparisons": 13,
+      "median_search_ns": 14700.0,
+      "p5_search_ns": 11500.0,
+      "p95_search_ns": 17500.0,
+      "median_linear_ns": 1400.0,
+      "p5_linear_ns": 200.0,
+      "p95_linear_ns": 2700.0,
+      "speedup_median": 0.10,
+      "all_correct": true
+    },
+    {
+      "region_size": 100000,
+      "trials": 100,
+      "expected_comparisons": 17,
+      "median_comparisons": 17,
+      "median_search_ns": 33100.0,
+      "p5_search_ns": 27300.0,
+      "p95_search_ns": 47000.0,
+      "median_linear_ns": 15800.0,
+      "p5_linear_ns": 2400.0,
+      "p95_linear_ns": 28100.0,
+      "speedup_median": 0.48,
+      "all_correct": true
+    },
+    {
+      "region_size": 1000000,
+      "trials": 100,
+      "expected_comparisons": 20,
+      "median_comparisons": 20,
+      "median_search_ns": 54300.0,
+      "p5_search_ns": 48300.0,
+      "p95_search_ns": 64500.0,
+      "median_linear_ns": 162950.0,
+      "p5_linear_ns": 21700.0,
+      "p95_linear_ns": 283700.0,
+      "speedup_median": 3.00,
+      "all_correct": true
+    },
+    {
+      "region_size": 10000000,
+      "trials": 100,
+      "expected_comparisons": 24,
+      "median_comparisons": 23,
+      "median_search_ns": 88050.0,
+      "p5_search_ns": 78700.0,
+      "p95_search_ns": 99300.0,
+      "median_linear_ns": 1694150.0,
+      "p5_linear_ns": 316100.0,
+      "p95_linear_ns": 3075800.0,
+      "speedup_median": 19.24,
+      "all_correct": true
+    },
+    {
+      "region_size": 50818468,
+      "trials": 20,
+      "expected_comparisons": 26,
+      "median_comparisons": 26,
+      "median_search_ns": 119200.0,
+      "p5_search_ns": 106500.0,
+      "p95_search_ns": 131400.0,
+      "median_linear_ns": 8843300.0,
+      "p5_linear_ns": 5836900.0,
+      "p95_linear_ns": 15888400.0,
+      "speedup_median": 74.19,
+      "all_correct": true
+    }
+  ]
+}

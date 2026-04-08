@@ -1,0 +1,72 @@
+{
+  "benchmark": "amortization",
+  "environment": {
+    "timestamp_utc": "2026-04-08T14:09:37.914594+00:00",
+    "timestamp_local": "2026-04-08T10:09:37.914594",
+    "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Windows",
+    "os_version": "10.0.26200",
+    "node": "muntaserPC2024",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_bytes": 102764539904,
+    "ram_gb": 95.7,
+    "hashrope_version": "0.2.0",
+    "hashrope_bio_version": "0.1.0"
+  },
+  "results": [
+    {
+      "chunk_size": 256,
+      "construction_time_s": 204.61405180001748,
+      "query_len": 10000,
+      "hashrope_query_ns": 2056550.0,
+      "baseline_hash_ns": 2024889.6,
+      "saving_per_query_ns": -31660.399999999907,
+      "amortization_queries": -1
+    },
+    {
+      "chunk_size": 1024,
+      "construction_time_s": 171.5958943000005,
+      "query_len": 10000,
+      "hashrope_query_ns": 2033539.8,
+      "baseline_hash_ns": 2072942.4,
+      "saving_per_query_ns": 39402.59999999986,
+      "amortization_queries": 4354939
+    },
+    {
+      "chunk_size": 4096,
+      "construction_time_s": 167.2334749000147,
+      "query_len": 10000,
+      "hashrope_query_ns": 2057760.4,
+      "baseline_hash_ns": 2014782.4,
+      "saving_per_query_ns": -42978.0,
+      "amortization_queries": -1
+    },
+    {
+      "chunk_size": 16384,
+      "construction_time_s": 164.16296220000368,
+      "query_len": 10000,
+      "hashrope_query_ns": 2036691.0,
+      "baseline_hash_ns": 2057433.8,
+      "saving_per_query_ns": 20742.800000000047,
+      "amortization_queries": 7914215
+    }
+  ],
+  "config": {
+    "fasta": "data\\chr22.fa",
+    "seq_name": "chr22",
+    "seq_len": 50818468,
+    "chunk_sizes": [
+      256,
+      1024,
+      4096,
+      16384
+    ],
+    "amort_query_len": 10000,
+    "amort_query_iters": 500,
+    "hash_base": 131,
+    "hash_prime": "2305843009213693951"
+  }
+}

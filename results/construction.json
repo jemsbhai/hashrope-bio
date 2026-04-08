@@ -1,0 +1,80 @@
+{
+  "benchmark": "construction",
+  "environment": {
+    "timestamp_utc": "2026-04-08T14:09:37.497263+00:00",
+    "timestamp_local": "2026-04-08T10:09:37.497263",
+    "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Windows",
+    "os_version": "10.0.26200",
+    "node": "muntaserPC2024",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "ram_bytes": 102764539904,
+    "ram_gb": 95.7,
+    "hashrope_version": "0.2.0",
+    "hashrope_bio_version": "0.1.0"
+  },
+  "results": [
+    {
+      "chunk_size": 256,
+      "seq_len": 50818468,
+      "leaves": 198510,
+      "internals": 198509,
+      "total_nodes": 397019,
+      "height": 22,
+      "construction_time_s": 204.61405180001748,
+      "peak_memory_mb": 114.51930046081543,
+      "throughput_mbs": 0.23685698662611965
+    },
+    {
+      "chunk_size": 1024,
+      "seq_len": 50818468,
+      "leaves": 49628,
+      "internals": 49627,
+      "total_nodes": 99255,
+      "height": 19,
+      "construction_time_s": 171.5958943000005,
+      "peak_memory_mb": 62.91712188720703,
+      "throughput_mbs": 0.28243256010533085
+    },
+    {
+      "chunk_size": 4096,
+      "seq_len": 50818468,
+      "leaves": 12407,
+      "internals": 12406,
+      "total_nodes": 24813,
+      "height": 17,
+      "construction_time_s": 167.2334749000147,
+      "peak_memory_mb": 52.074015617370605,
+      "throughput_mbs": 0.28980004009178567
+    },
+    {
+      "chunk_size": 16384,
+      "seq_len": 50818468,
+      "leaves": 3102,
+      "internals": 3101,
+      "total_nodes": 6203,
+      "height": 14,
+      "construction_time_s": 164.16296220000368,
+      "peak_memory_mb": 49.36838722229004,
+      "throughput_mbs": 0.2952204753205398
+    }
+  ],
+  "config": {
+    "fasta": "data\\chr22.fa",
+    "seq_name": "chr22",
+    "seq_len": 50818468,
+    "chunk_sizes": [
+      256,
+      1024,
+      4096,
+      16384
+    ],
+    "amort_query_len": 10000,
+    "amort_query_iters": 500,
+    "hash_base": 131,
+    "hash_prime": "2305843009213693951"
+  }
+}
