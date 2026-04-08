@@ -3,11 +3,15 @@ name = "hashrope-bio"
 version = "0.1.0"
 edition = "2021"
 authors = ["Muntaser Syed <muntaser@ieee.org>"]
-description = "Computational biology benchmarks for hashrope — resistance panels, genomic region queries, tandem repeats"
+description = "Computational biology applications of hashrope — drug resistance panels, genomic region queries, tandem repeat analysis"
 license = "MIT"
+repository = "https://github.com/jemsbhai/hashrope-bio"
+keywords = ["bioinformatics", "genomics", "hash-rope", "sequence-comparison", "drug-discovery"]
+categories = ["science", "algorithms"]
+readme = "README.md"
 
 [dependencies]
-hashrope = { path = "../../../../packages/rust" }
+hashrope = { version = "0.2.1", path = "../../../../packages/rust" }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
