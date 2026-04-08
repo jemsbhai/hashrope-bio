@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hashrope-bio"
+version = "0.1.0"
+description = "Computational biology applications of hash rope data structures"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Muntaser Syed", email = "muntaser@ieee.org" },
+]
+keywords = ["bioinformatics", "genomics", "hash-rope", "sequence-comparison", "drug-discovery"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
+
+dependencies = [
+    "hashrope>=0.1.0",
+]
+
+[project.optional-dependencies]
+genomics = [
+    "pysam>=0.22",           # samtools bindings for FASTA/BAM
+    "biopython>=1.83",       # FASTA parsing fallback
+]
+proteomics = [
+    "MDAnalysis>=2.7",       # MD trajectory reading
+    "numpy>=1.26",
+]
+cheminformatics = [
+    "rdkit",                 # canonical SMILES, fingerprints
+]
+bench = [
+    "pysam>=0.22",
+    "biopython>=1.83",
+    "MDAnalysis>=2.7",
+    "numpy>=1.26",
+    "rdkit",
+    "pandas>=2.0",           # results tabulation
+    "matplotlib>=3.8",       # plotting
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-benchmark>=4.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hashrope_bio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

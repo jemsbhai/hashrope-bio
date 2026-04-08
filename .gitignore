@@ -1,0 +1,42 @@
+# Data files (large, downloaded separately)
+data/*.fa
+data/*.fa.fai
+data/*.fasta
+data/*.fasta.fai
+data/*.gz
+data/*.bam
+data/*.bai
+data/*.xtc
+data/*.trr
+data/*.pdb
+data/*.mmcif
+data/*.smi
+data/*.vcf
+data/*.csv
+
+# Keep the data README
+!data/README.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Benchmark results (committed to ../results/ instead)
+benchmarks/output/
+
+# OS
+Thumbs.db
+.DS_Store
