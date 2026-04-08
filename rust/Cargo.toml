@@ -9,6 +9,7 @@ repository = "https://github.com/jemsbhai/hashrope-bio"
 keywords = ["bioinformatics", "genomics", "hash-rope", "sequence-comparison", "drug-discovery"]
 categories = ["science", "algorithms"]
 readme = "README.md"
+include = ["src/**/*", "benches/**/*", "Cargo.toml", "LICENSE", "README.md"]
 
 [dependencies]
 hashrope = { version = "0.2.1", path = "../../../../packages/rust" }
