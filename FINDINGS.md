@@ -428,8 +428,8 @@ chr22 contains 11,658,691 N characters (22.9%), concentrated in the centromeric/
 
 ## E-G3 ClinVar Validation: Real Pathogenic SNV Localization (Rust, chr22)
 
-**Status**: PASS — 200/200 ClinVar pathogenic SNVs correctly localized (100.0%).
-**Result files**: `results/clinvar_validation_rust.json` (+ timestamped archive `clinvar_validation_rust_20260408T182945Z.json`)
+**Status**: PASS — **3,422/3,422** ClinVar pathogenic SNVs correctly localized (100.0%).
+**Result files**: `results/clinvar_validation_rust.json` (+ timestamped archives `clinvar_validation_rust_20260408T182945Z.json` [200-variant pilot], `clinvar_validation_rust_20260408T204850Z.json` [full 3,422])
 **Date**: 2026-04-08
 
 ### Data Source
@@ -445,28 +445,43 @@ chr22 contains 11,658,691 N characters (22.9%), concentrated in the centromeric/
 
 ### Setup
 
-200 pathogenic/likely_pathogenic SNVs from ClinVar, tested on real GRCh38 chr22 (50,818,468 bp).
+All 3,422 pathogenic/likely_pathogenic SNVs from ClinVar, tested on real GRCh38 chr22 (50,818,468 bp).
 chunk_size=256. Each variant: create sample sequence with the ClinVar alt allele, build both ropes, binary search to localize, verify against ClinVar position.
-REF allele double-validated: once during Python extraction (against chr22.fa), once in Rust before search (against loaded sequence). Both passed 200/200.
+REF allele double-validated: once during Python extraction (against chr22.fa), once in Rust before search (against loaded sequence). Both passed 3,422/3,422.
 
-### Results
+Initial pilot run: 200 variants (100.0% correct). Full run: all 3,422 variants.
+
+### Results (Full Run — 3,422 Variants)
 
 | Metric | Value |
 |:-------|:------|
-| Variants tested | 200 (of 3,422 available) |
-| **Correctly localized** | **200 (100.0%)** |
+| Variants tested | **3,422** (all available chr22 pathogenic/likely_pathogenic SNVs) |
+| **Correctly localized** | **3,422 (100.0%)** |
 | Incorrect | 0 |
-| Average comparisons | 25.7 (expected ⌈log₂(50,818,468)⌉ = 26) |
-| Median search time | 122,900 ns (123 µs) |
-| Search p5–p95 | 110,100–209,500 ns |
-| Total wall-clock | 226.8s (dominated by rope construction, not search) |
+| Average comparisons | 25.67 (expected ⌈log₂(50,818,468)⌉ = 26) |
+| Median search time | 117,900 ns (118 µs) |
+| Search p5–p95 | 106,100–152,900 ns |
+| Total wall-clock | 3,623.9s (~60 min) |
 | Throughput | 0.9 variants/sec (limited by 2 × rope construction per variant) |
+| REF allele validations passed | 3,422/3,422 |
+| REF allele validations failed | 0 |
+
+### Comparison: Pilot (200) vs Full (3,422)
+
+| Metric | Pilot (200) | Full (3,422) |
+|:-------|:------------|:-------------|
+| Accuracy | 100.0% | 100.0% |
+| Avg comparisons | 25.7 | 25.67 |
+| Median search (ns) | 122,900 | 117,900 |
+| p5–p95 (ns) | 110,100–209,500 | 106,100–152,900 |
+
+The full run shows tighter p95 (153 µs vs 210 µs), likely due to better cache warming over the longer run. The median and average comparisons are stable, confirming the pilot was representative.
 
 ### Significance
 
 This is the definitive real-data validation for CB-C3. Every tested variant is a real pathogenic mutation from clinical submissions to ClinVar — not synthetic, not random, not simulated. The diseases include immunodeficiency, cancer syndromes, metabolic disorders, and other conditions for which these variants were clinically reported.
 
-The binary search correctly identified the exact nucleotide position of every single variant using only ⌈log₂(N)⌉ ≈ 26 hash comparisons on a 51 Mbp chromosome.
+The binary search correctly identified the exact nucleotide position of **every single one of 3,422 variants** using only ⌈log₂(N)⌉ ≈ 26 hash comparisons on a 51 Mbp chromosome. This is exhaustive coverage of all known pathogenic SNVs on chr22 in ClinVar — there are no untested variants remaining.
 
 ### Data Integrity Chain
 
@@ -478,5 +493,9 @@ The binary search correctly identified the exact nucleotide position of every si
 6. Independent linear scan not used here (validated in synthetic E-G3 above)
 
 No step in this chain involves synthetic or simulated data. The sequence is the GRCh38 human reference. The variants are from clinical laboratories worldwide.
+
+### Verdict
+
+**CB-C3 fully validated on real clinical data.** 3,422/3,422 pathogenic SNVs on chr22 correctly localized with zero errors, 25.67 average comparisons (theoretical optimum: 26), median 118 µs per variant. This is exhaustive — no pathogenic SNV on chr22 in ClinVar was missed or mislocalized.
 
 ---
