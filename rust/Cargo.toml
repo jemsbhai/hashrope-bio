@@ -1,0 +1,17 @@
+[package]
+name = "hashrope-bio"
+version = "0.1.0"
+edition = "2021"
+authors = ["Muntaser Syed <muntaser@ieee.org>"]
+description = "Computational biology benchmarks for hashrope — resistance panels, genomic region queries, tandem repeats"
+license = "MIT"
+
+[dependencies]
+hashrope = { path = "../../../../packages/rust" }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "bio_benchmarks"
+harness = false
