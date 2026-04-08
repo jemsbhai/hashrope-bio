@@ -424,3 +424,59 @@ chr22 contains 11,658,691 N characters (22.9%), concentrated in the centromeric/
 **CB-C3 is confirmed.** Binary search via substr_hash localizes a single-nucleotide mutation in O(log N) comparisons (exactly ⌈log₂(N)⌉), with each comparison costing O(log w). Total: O(log N · log w) = O(log² N). At full chr22 (51 Mbp), this is 26 comparisons in 119 µs — **74× faster** than linear scan (8.84 ms). All 620 trials across 6 region sizes produced the correct mutation position with zero false negatives.
 
 ---
+
+
+## E-G3 ClinVar Validation: Real Pathogenic SNV Localization (Rust, chr22)
+
+**Status**: PASS — 200/200 ClinVar pathogenic SNVs correctly localized (100.0%).
+**Result files**: `results/clinvar_validation_rust.json` (+ timestamped archive `clinvar_validation_rust_20260408T182945Z.json`)
+**Date**: 2026-04-08
+
+### Data Source
+
+**ClinVar** (NCBI): the gold-standard public archive of clinically significant human genetic variants.
+- VCF download: `https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz`
+- Citation: Landrum MJ et al. Nucleic Acids Res. 2018;46(D1):D1062-D1067. PMID: 29165669
+- Total ClinVar variants parsed: 4,403,650
+- Chromosome 22 variants: 95,515
+- Chr22 SNVs (single nucleotide): 89,050
+- Pathogenic/Likely_pathogenic SNVs: 3,422
+- REF allele validated against chr22.fa: 3,422/3,422 (100%, zero mismatches)
+
+### Setup
+
+200 pathogenic/likely_pathogenic SNVs from ClinVar, tested on real GRCh38 chr22 (50,818,468 bp).
+chunk_size=256. Each variant: create sample sequence with the ClinVar alt allele, build both ropes, binary search to localize, verify against ClinVar position.
+REF allele double-validated: once during Python extraction (against chr22.fa), once in Rust before search (against loaded sequence). Both passed 200/200.
+
+### Results
+
+| Metric | Value |
+|:-------|:------|
+| Variants tested | 200 (of 3,422 available) |
+| **Correctly localized** | **200 (100.0%)** |
+| Incorrect | 0 |
+| Average comparisons | 25.7 (expected ⌈log₂(50,818,468)⌉ = 26) |
+| Median search time | 122,900 ns (123 µs) |
+| Search p5–p95 | 110,100–209,500 ns |
+| Total wall-clock | 226.8s (dominated by rope construction, not search) |
+| Throughput | 0.9 variants/sec (limited by 2 × rope construction per variant) |
+
+### Significance
+
+This is the definitive real-data validation for CB-C3. Every tested variant is a real pathogenic mutation from clinical submissions to ClinVar — not synthetic, not random, not simulated. The diseases include immunodeficiency, cancer syndromes, metabolic disorders, and other conditions for which these variants were clinically reported.
+
+The binary search correctly identified the exact nucleotide position of every single variant using only ⌈log₂(N)⌉ ≈ 26 hash comparisons on a 51 Mbp chromosome.
+
+### Data Integrity Chain
+
+1. ClinVar VCF downloaded from NCBI FTP (official, versioned)
+2. Python extraction script filters for chr22 + SNV + pathogenic, validates REF allele against chr22.fa
+3. Rust benchmark re-validates REF allele against loaded sequence before each test
+4. Each variant's alt allele applied to real chr22 sequence
+5. Binary search result compared against ClinVar's documented position
+6. Independent linear scan not used here (validated in synthetic E-G3 above)
+
+No step in this chain involves synthetic or simulated data. The sequence is the GRCh38 human reference. The variants are from clinical laboratories worldwide.
+
+---

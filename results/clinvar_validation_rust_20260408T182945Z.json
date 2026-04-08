@@ -1,0 +1,39 @@
+{
+  "benchmark": "mutation_localization_clinvar_rust",
+  "environment": {
+    "timestamp_unix": "1775672985",
+    "os": "windows",
+    "arch": "x86_64",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+    "language": "rust",
+    "build_profile": "release"
+  },
+  "config": {
+    "fasta": "../data/chr22.fa",
+    "variants_file": "../data/clinvar_chr22_pathogenic_snvs.tsv",
+    "seq_name": "chr22",
+    "seq_len": 50818468,
+    "chunk_size": 256,
+    "total_clinvar_snvs": 3422,
+    "variants_tested": 200,
+    "max_variants_setting": 200,
+    "data_source": "ClinVar VCF (GRCh38), NCBI FTP",
+    "citation": "Landrum MJ et al. Nucleic Acids Res. 2018;46(D1):D1062-D1067. PMID: 29165669"
+  },
+  "results": {
+    "variants_tested": 200,
+    "correctly_localized": 200,
+    "incorrect": 0,
+    "accuracy_pct": 100.0000,
+    "avg_comparisons": 25.66,
+    "expected_comparisons": 26,
+    "median_search_ns": 122900.0,
+    "p5_search_ns": 110100.0,
+    "p95_search_ns": 209500.0,
+    "total_wall_clock_s": 226.777,
+    "variants_per_sec": 0.9,
+    "ref_allele_validations_passed": 200,
+    "ref_allele_validations_failed": 0
+  }
+}
