@@ -5,7 +5,7 @@
 //! slice+hash (O(L)).
 //!
 //! Usage:
-//!     cargo run --release --bin bench_region_query_g1 -- --fasta ../data/chr22.fa --output ../../../results/
+//!     cargo run --release --bin bench_region_query_g1 -- --fasta ../data/chr22.fa --output ../results/
 
 use std::env;
 use std::fs;

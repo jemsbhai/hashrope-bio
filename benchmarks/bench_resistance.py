@@ -9,7 +9,7 @@ Runs on both:
 
 Usage:
     python benchmarks/bench_resistance.py
-    python benchmarks/bench_resistance.py --output ../../results/
+    python benchmarks/bench_resistance.py --output results/
 """
 
 from __future__ import annotations

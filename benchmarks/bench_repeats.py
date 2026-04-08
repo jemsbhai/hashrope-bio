@@ -8,7 +8,7 @@ Runs both synthetic benchmarks (controlled) and real data validation
 
 Usage:
     python benchmarks/bench_repeats.py
-    python benchmarks/bench_repeats.py --output ../../results/
+    python benchmarks/bench_repeats.py --output results/
 """
 
 from __future__ import annotations
@@ -241,7 +241,7 @@ def print_comparison_results(results: list[ComparisonResult]) -> None:
 def main():
     parser = argparse.ArgumentParser(description="E-G2: Tandem Repeat Benchmarks")
     parser.add_argument("--output", type=Path, default=None,
-                        help="Directory for JSON output (e.g., ../../results/)")
+                        help="Directory for JSON output (e.g., results/)")
     args = parser.parse_args()
 
     print("hashrope-bio E-G2: Tandem Repeat Compression via RepeatNode")

@@ -5,7 +5,7 @@ and computes the amortization point vs per-query savings.
 
 Usage:
     python benchmarks/bench_construction.py --fasta data/chr22.fa
-    python benchmarks/bench_construction.py --fasta data/chr22.fa --chunk-sizes 256,1024,4096,16384 --output ../../results/
+    python benchmarks/bench_construction.py --fasta data/chr22.fa --chunk-sizes 256,1024,4096,16384 --output results/
 """
 
 from __future__ import annotations
@@ -282,7 +282,7 @@ def main():
     parser.add_argument("--chunk-sizes", type=str, default=",".join(str(x) for x in DEFAULT_CHUNK_SIZES),
                         help="Comma-separated chunk sizes (default: 256,1024,4096,16384)")
     parser.add_argument("--output", type=Path, default=None,
-                        help="Directory for JSON output (e.g., ../../results/)")
+                        help="Directory for JSON output (e.g., results/)")
     parser.add_argument("--skip-amortization", action="store_true",
                         help="Skip amortization benchmark (faster)")
     args = parser.parse_args()

@@ -9,7 +9,7 @@
 //! Regions that are entirely N are skipped and re-sampled.
 //!
 //! Usage:
-//!     cargo run --release --bin bench_mutation_g3 -- --fasta ../data/chr22.fa --output ../../../results/
+//!     cargo run --release --bin bench_mutation_g3 -- --fasta ../data/chr22.fa --output ../results/
 
 use std::env;
 use std::fs;

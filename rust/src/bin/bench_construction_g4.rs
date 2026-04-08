@@ -4,7 +4,7 @@
 //! Measures construction time, tree metrics, and amortization at genome scale.
 //!
 //! Usage:
-//!     cargo run --release --bin bench_construction_g4 -- --fasta ../data/chr22.fa --output ../../../results/
+//!     cargo run --release --bin bench_construction_g4 -- --fasta ../data/chr22.fa --output ../results/
 
 use std::env;
 use std::fs::{self, File};

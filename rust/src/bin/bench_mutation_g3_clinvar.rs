@@ -10,7 +10,7 @@
 //!     cargo run --release --bin bench_mutation_g3_clinvar -- \
 //!         --fasta ../data/chr22.fa \
 //!         --variants ../data/clinvar_chr22_pathogenic_snvs.tsv \
-//!         --output ../../../results/
+//!         --output ../results/
 
 use std::env;
 use std::fs;
