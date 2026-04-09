@@ -186,10 +186,12 @@ dependencies = [
 [[package]]
 name = "hashrope"
 version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b991ee150093ffe409ab9593bad2cfd7402253b0bf76e9106cf4fea0d58b0cfe"
 
 [[package]]
 name = "hashrope-bio"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "criterion",
  "hashrope",
