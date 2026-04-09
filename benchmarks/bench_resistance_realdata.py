@@ -17,7 +17,11 @@ Input files (in data/):
   - hivdb_rt_aligned.fa        — Sierra-aligned patient RT sequences
   - hivdb_rt_ground_truth.tsv  — Sierra mutation calls
 
-Output: results/resistance_realdata.json (+ timestamped archive)
+Usage:
+  python bench_resistance_realdata.py              # original 100 sequences
+  python bench_resistance_realdata.py --expanded   # expanded 2,000+ sequences
+
+Output: results/resistance_realdata[_expanded].json (+ timestamped archive)
 """
 
 import json
@@ -38,16 +42,6 @@ DATA_DIR = CODE_DIR / "data"
 RESULTS_DIR = CODE_DIR / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
-# HXB2 RT coordinates (0-based in genome)
-# RT starts after protease (99 aa = 297 nt) in pol
-# pol CDS starts at genome position 2085 (1-based) = 2084 (0-based)
-# RT = pol[297:1977] = genome[2381:4061] ... actually let me be precise.
-#
-# Standard HXB2 annotation (GenBank K03455):
-#   pol CDS: join(2085..5096)  — but this includes the gag-pol ribosomal frameshift
-#   The correct pol reading frame for RT starts at nt 2550 (1-based)
-#   PR: codons 1-99 of pol, RT: codons 100-659 of pol
-#   RT in genome coords: 2550..4229 (1-based) = 2549..4229 (0-based, exclusive end)
 HXB2_RT_START = 2549  # 0-based inclusive
 HXB2_RT_END = 4229    # 0-based exclusive
 HXB2_RT_LEN = 1680    # 560 codons
@@ -62,7 +56,7 @@ PANEL_POSITIONS = sorted([
 
 CHUNK_SIZE = 64  # small gene, small chunks
 
-# Standard genetic code (codon → amino acid)
+# Standard genetic code (codon -> amino acid)
 CODON_TABLE = {
     'TTT': 'F', 'TTC': 'F', 'TTA': 'L', 'TTG': 'L',
     'CTT': 'L', 'CTC': 'L', 'CTA': 'L', 'CTG': 'L',
@@ -82,7 +76,7 @@ CODON_TABLE = {
     'GGT': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G',
 }
 
-# Known DRMs at our panel positions (position → set of mutant AAs)
+# Known DRMs at our panel positions (position -> set of mutant AAs)
 # From Stanford HIVDB
 KNOWN_DRMS = {
     41:  {'L'},         # M41L
@@ -208,8 +202,6 @@ def extract_hxb2_rt(genome_path: Path) -> bytes:
             f"Expected RT length {HXB2_RT_LEN}, got {len(rt_seq)}. "
             f"Check HXB2 coordinates."
         )
-    # Verify it starts with CCC (Pro, first codon of RT)
-    # Actually RT starts with CCC in HXB2 — let's verify
     print(f"  HXB2 RT first 3 codons: {rt_seq[:9]}")
     print(f"  HXB2 RT length: {len(rt_seq)} bp")
     return rt_seq.encode("ascii")
@@ -271,16 +263,12 @@ def validate_sequence(
     sample_bytes = sample_upper.encode("ascii")
 
     # Build ropes
-    # Reference RT: extract the portion matching patient coverage
-    # Patient starts at codon first_aa (1-based), so nucleotide offset (first_aa-1)*3
     ref_offset = (first_aa - 1) * 3
     ref_end = min(last_aa * 3, len(ref_bytes))
     ref_region = ref_bytes[ref_offset:ref_end]
 
-    # Patient sequence should be (last_aa - first_aa + 1) * 3 long
     expected_len = (last_aa - first_aa + 1) * 3
     if len(sample_bytes) < expected_len:
-        # Might have trailing truncation; use what we have
         pass
 
     ref_rope = _build_rope(ref_region, CHUNK_SIZE, h)
@@ -288,12 +276,10 @@ def validate_sequence(
 
     results = {}
     for pos in PANEL_POSITIONS:
-        # Check if this position is within coverage
         if pos < first_aa or pos > last_aa:
             results[pos] = {"status": "out_of_range"}
             continue
 
-        # Codon offset relative to the aligned region
         codon_offset_in_region = (pos - first_aa) * 3
 
         if codon_offset_in_region + 3 > len(ref_region) or \
@@ -301,12 +287,10 @@ def validate_sequence(
             results[pos] = {"status": "truncated"}
             continue
 
-        # Hashrope comparison
         ref_hash = rope_substr_hash(ref_rope, codon_offset_in_region, 3, h)
         sample_hash = rope_substr_hash(sample_rope, codon_offset_in_region, 3, h)
         hashrope_mismatch = (ref_hash != sample_hash)
 
-        # Byte comparison (ground truth for algorithmic correctness)
         ref_codon = ref_region[codon_offset_in_region:codon_offset_in_region + 3]
         sample_codon = sample_bytes[codon_offset_in_region:codon_offset_in_region + 3]
         byte_mismatch = (ref_codon != sample_codon)
@@ -323,12 +307,17 @@ def validate_sequence(
     return results
 
 
-def main():
+def main(expanded=False):
     import platform
     import datetime
 
+    # File prefix: original (100 seqs) or expanded (2,000+ seqs)
+    prefix = "hivdb_rt_expanded_" if expanded else "hivdb_rt_"
+    result_tag = "resistance_realdata_expanded" if expanded else "resistance_realdata"
+    label = "Expanded (2,000+)" if expanded else "Original (100)"
+
     print("=" * 60)
-    print("E-D2 Real-Data Validation: hashrope vs HIVDB Sierra")
+    print(f"E-D2 Real-Data Validation: hashrope vs HIVDB Sierra [{label}]")
     print("=" * 60)
 
     # Step 1: Load HXB2 RT reference
@@ -341,13 +330,13 @@ def main():
 
     # Step 2: Load aligned patient sequences
     print("\nLoading Sierra-aligned patient sequences...")
-    aligned_path = DATA_DIR / "hivdb_rt_aligned.fa"
+    aligned_path = DATA_DIR / f"{prefix}aligned.fa"
     patient_seqs = load_fasta(aligned_path)
     print(f"  Loaded {len(patient_seqs)} sequences")
 
     # Step 3: Load Sierra ground truth
     print("\nLoading Sierra ground truth...")
-    tsv_path = DATA_DIR / "hivdb_rt_ground_truth.tsv"
+    tsv_path = DATA_DIR / f"{prefix}ground_truth.tsv"
     truth = load_ground_truth(tsv_path)
     print(f"  Loaded truth for {len(truth)} sequences")
 
@@ -361,15 +350,10 @@ def main():
     total_hashrope_byte_agree = 0
     total_hashrope_byte_disagree = 0
 
-    # Sensitivity tracking: Sierra says mutation → hashrope detects?
-    sierra_positive_total = 0  # Sierra-flagged DRM at panel position
-    sierra_positive_detected = 0  # hashrope also detected
+    sierra_positive_total = 0
+    sierra_positive_detected = 0
     sierra_positive_missed = 0
-
-    # Extra detections: hashrope detects but Sierra doesn't flag
     extra_detections = 0
-
-    # True negatives: neither flags
     true_negatives = 0
 
     for hdr, seq in patient_seqs:
@@ -497,6 +481,7 @@ def main():
             "panel_positions": PANEL_POSITIONS,
             "chunk_size": CHUNK_SIZE,
             "data_source": "NCBI GenBank + Stanford HIVDB Sierra GraphQL",
+            "dataset": label,
             "sierra_citation": "Liu TF, Shafer RW. Web Resources for HIV Type 1 Genotypic-Resistance Test Interpretation. Clin Infect Dis. 2006;42(11):1608-1618.",
         },
         "results": {
@@ -523,18 +508,23 @@ def main():
     }
 
     # Save latest
-    out_path = RESULTS_DIR / "resistance_realdata.json"
+    out_path = RESULTS_DIR / f"{result_tag}.json"
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2)
     print(f"\nSaved: {out_path}")
 
     # Save timestamped archive
     ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    archive_path = RESULTS_DIR / f"resistance_realdata_{ts}.json"
+    archive_path = RESULTS_DIR / f"{result_tag}_{ts}.json"
     with open(archive_path, "w") as f:
         json.dump(output, f, indent=2)
     print(f"Saved: {archive_path}")
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="E-D2 resistance panel validation")
+    parser.add_argument("--expanded", action="store_true",
+                        help="Use expanded 2,000+ sequence dataset")
+    args = parser.parse_args()
+    main(expanded=args.expanded)

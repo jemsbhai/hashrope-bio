@@ -1,0 +1,361 @@
+{
+  "analysis": "drug_resistance_correlation",
+  "environment": {
+    "timestamp_iso": "2026-04-09T03:05:44.167592+00:00",
+    "os": "Windows",
+    "python_version": "3.12.2"
+  },
+  "config": {
+    "dataset": "Expanded 2,000-sequence (NCBI GenBank + Sierra)",
+    "sequences_analyzed": 1999,
+    "drugs_analyzed": 13,
+    "nrti_drugs": [
+      "3TC",
+      "ABC",
+      "AZT",
+      "D4T",
+      "DDI",
+      "FTC",
+      "TDF"
+    ],
+    "nnrti_drugs": [
+      "DOR",
+      "DPV",
+      "EFV",
+      "ETR",
+      "NVP",
+      "RPV"
+    ]
+  },
+  "results": {
+    "panel_count_vs_resistance": [
+      {
+        "panel_mutations": "0",
+        "n_sequences": 1600,
+        "susceptible": 1556,
+        "potential_low": 35,
+        "low": 2,
+        "intermediate": 7,
+        "high": 0,
+        "pct_any_resistance": 2.75
+      },
+      {
+        "panel_mutations": "1",
+        "n_sequences": 276,
+        "susceptible": 115,
+        "potential_low": 5,
+        "low": 94,
+        "intermediate": 5,
+        "high": 57,
+        "pct_any_resistance": 58.33
+      },
+      {
+        "panel_mutations": "2",
+        "n_sequences": 71,
+        "susceptible": 6,
+        "potential_low": 3,
+        "low": 16,
+        "intermediate": 8,
+        "high": 38,
+        "pct_any_resistance": 91.55
+      },
+      {
+        "panel_mutations": "3",
+        "n_sequences": 27,
+        "susceptible": 0,
+        "potential_low": 0,
+        "low": 2,
+        "intermediate": 3,
+        "high": 22,
+        "pct_any_resistance": 100.0
+      },
+      {
+        "panel_mutations": "4+",
+        "n_sequences": 25,
+        "susceptible": 0,
+        "potential_low": 0,
+        "low": 0,
+        "intermediate": 1,
+        "high": 24,
+        "pct_any_resistance": 100.0
+      }
+    ],
+    "resistance_level_vs_mutations": [
+      {
+        "level": "Susceptible",
+        "rank": 0,
+        "n_sequences": 1677,
+        "mean_panel_mutations": 0.076,
+        "median_panel_mutations": 0,
+        "max_panel_mutations": 2,
+        "mean_total_rt_mutations": 13.35
+      },
+      {
+        "level": "Potential Low-Level Resistance",
+        "rank": 1,
+        "n_sequences": 43,
+        "mean_panel_mutations": 0.256,
+        "median_panel_mutations": 0,
+        "max_panel_mutations": 2,
+        "mean_total_rt_mutations": 17.35
+      },
+      {
+        "level": "Low-Level Resistance",
+        "rank": 2,
+        "n_sequences": 114,
+        "mean_panel_mutations": 1.158,
+        "median_panel_mutations": 1,
+        "max_panel_mutations": 3,
+        "mean_total_rt_mutations": 14.61
+      },
+      {
+        "level": "Intermediate Resistance",
+        "rank": 3,
+        "n_sequences": 24,
+        "mean_panel_mutations": 1.417,
+        "median_panel_mutations": 2,
+        "max_panel_mutations": 4,
+        "mean_total_rt_mutations": 15.83
+      },
+      {
+        "level": "High-Level Resistance",
+        "rank": 4,
+        "n_sequences": 141,
+        "mean_panel_mutations": 2.255,
+        "median_panel_mutations": 2,
+        "max_panel_mutations": 11,
+        "mean_total_rt_mutations": 17.45
+      }
+    ],
+    "per_drug_breakdown": {
+      "3TC": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1964,
+        "resistant_any": 35,
+        "pct_resistant": 1.75,
+        "high_level": 23,
+        "intermediate": 3,
+        "low": 2,
+        "potential_low": 7
+      },
+      "ABC": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1953,
+        "resistant_any": 46,
+        "pct_resistant": 2.3,
+        "high_level": 7,
+        "intermediate": 13,
+        "low": 24,
+        "potential_low": 2
+      },
+      "AZT": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1904,
+        "resistant_any": 95,
+        "pct_resistant": 4.75,
+        "high_level": 17,
+        "intermediate": 13,
+        "low": 18,
+        "potential_low": 47
+      },
+      "D4T": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1887,
+        "resistant_any": 112,
+        "pct_resistant": 5.6,
+        "high_level": 15,
+        "intermediate": 21,
+        "low": 59,
+        "potential_low": 17
+      },
+      "DDI": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1885,
+        "resistant_any": 114,
+        "pct_resistant": 5.7,
+        "high_level": 16,
+        "intermediate": 12,
+        "low": 19,
+        "potential_low": 67
+      },
+      "DOR": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1946,
+        "resistant_any": 53,
+        "pct_resistant": 2.65,
+        "high_level": 8,
+        "intermediate": 20,
+        "low": 8,
+        "potential_low": 17
+      },
+      "DPV": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1810,
+        "resistant_any": 189,
+        "pct_resistant": 9.45,
+        "high_level": 49,
+        "intermediate": 19,
+        "low": 83,
+        "potential_low": 38
+      },
+      "EFV": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1809,
+        "resistant_any": 190,
+        "pct_resistant": 9.5,
+        "high_level": 94,
+        "intermediate": 33,
+        "low": 8,
+        "potential_low": 55
+      },
+      "ETR": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1822,
+        "resistant_any": 177,
+        "pct_resistant": 8.85,
+        "high_level": 6,
+        "intermediate": 37,
+        "low": 18,
+        "potential_low": 116
+      },
+      "FTC": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1964,
+        "resistant_any": 35,
+        "pct_resistant": 1.75,
+        "high_level": 23,
+        "intermediate": 3,
+        "low": 2,
+        "potential_low": 7
+      },
+      "NVP": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1807,
+        "resistant_any": 192,
+        "pct_resistant": 9.6,
+        "high_level": 126,
+        "intermediate": 14,
+        "low": 14,
+        "potential_low": 38
+      },
+      "RPV": {
+        "class": "NNRTI",
+        "total": 1999,
+        "susceptible": 1815,
+        "resistant_any": 184,
+        "pct_resistant": 9.2,
+        "high_level": 25,
+        "intermediate": 37,
+        "low": 34,
+        "potential_low": 88
+      },
+      "TDF": {
+        "class": "NRTI",
+        "total": 1999,
+        "susceptible": 1969,
+        "resistant_any": 30,
+        "pct_resistant": 1.5,
+        "high_level": 2,
+        "intermediate": 10,
+        "low": 13,
+        "potential_low": 5
+      }
+    },
+    "with_vs_without_panel_mutations": {
+      "with_panel": 399,
+      "without_panel": 1600,
+      "enrichment_per_drug": [
+        {
+          "drug": "3TC",
+          "with_panel_pct_resistant": 8.77,
+          "without_panel_pct_resistant": 0.0,
+          "enrichment_fold": null
+        },
+        {
+          "drug": "ABC",
+          "with_panel_pct_resistant": 11.53,
+          "without_panel_pct_resistant": 0.0,
+          "enrichment_fold": null
+        },
+        {
+          "drug": "AZT",
+          "with_panel_pct_resistant": 23.81,
+          "without_panel_pct_resistant": 0.0,
+          "enrichment_fold": null
+        },
+        {
+          "drug": "D4T",
+          "with_panel_pct_resistant": 26.57,
+          "without_panel_pct_resistant": 0.38,
+          "enrichment_fold": 70.84
+        },
+        {
+          "drug": "DDI",
+          "with_panel_pct_resistant": 27.07,
+          "without_panel_pct_resistant": 0.38,
+          "enrichment_fold": 72.18
+        },
+        {
+          "drug": "DOR",
+          "with_panel_pct_resistant": 12.03,
+          "without_panel_pct_resistant": 0.31,
+          "enrichment_fold": 38.5
+        },
+        {
+          "drug": "DPV",
+          "with_panel_pct_resistant": 38.35,
+          "without_panel_pct_resistant": 2.25,
+          "enrichment_fold": 17.04
+        },
+        {
+          "drug": "EFV",
+          "with_panel_pct_resistant": 38.1,
+          "without_panel_pct_resistant": 2.38,
+          "enrichment_fold": 16.04
+        },
+        {
+          "drug": "ETR",
+          "with_panel_pct_resistant": 35.34,
+          "without_panel_pct_resistant": 2.25,
+          "enrichment_fold": 15.71
+        },
+        {
+          "drug": "FTC",
+          "with_panel_pct_resistant": 8.77,
+          "without_panel_pct_resistant": 0.0,
+          "enrichment_fold": null
+        },
+        {
+          "drug": "NVP",
+          "with_panel_pct_resistant": 38.6,
+          "without_panel_pct_resistant": 2.38,
+          "enrichment_fold": 16.25
+        },
+        {
+          "drug": "RPV",
+          "with_panel_pct_resistant": 37.09,
+          "without_panel_pct_resistant": 2.25,
+          "enrichment_fold": 16.49
+        },
+        {
+          "drug": "TDF",
+          "with_panel_pct_resistant": 7.52,
+          "without_panel_pct_resistant": 0.0,
+          "enrichment_fold": null
+        }
+      ]
+    },
+    "spearman_rho": 0.7622
+  }
+}

@@ -40,3 +40,5 @@ benchmarks/output/
 # OS
 Thumbs.db
 .DS_Store
+
+data/*.json
