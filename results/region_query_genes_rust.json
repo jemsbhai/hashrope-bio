@@ -1,0 +1,40 @@
+{
+  "benchmark": "region_query_genes_rust",
+  "environment": {
+    "timestamp_unix": "1775696679",
+    "os": "windows",
+    "arch": "x86_64",
+    "cpu_name": "Intel(R) Core(TM) i9-14900HX",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+    "language": "rust",
+    "build_profile": "release"
+  },
+  "config": {
+    "chunk_size": 256,
+    "seq_len": 50818468,
+    "genes_queried": 643,
+    "exons_queried": 5127,
+    "total_queries": 5770,
+    "total_hash_mismatches": 0,
+    "data_source": "UCSC refGene hg38, chr22"
+  },
+  "gene_body_results": [
+    {"size_bin": "<100 bp", "count": 47, "hashrope_median_ns": 800.0, "baseline_median_ns": 400.0, "speedup": 0.50, "mismatches": 0},
+    {"size_bin": "100-500 bp", "count": 10, "hashrope_median_ns": 1450.0, "baseline_median_ns": 600.0, "speedup": 0.41, "mismatches": 0},
+    {"size_bin": "500-1K bp", "count": 8, "hashrope_median_ns": 2400.0, "baseline_median_ns": 3750.0, "speedup": 1.56, "mismatches": 0},
+    {"size_bin": "1K-5K bp", "count": 93, "hashrope_median_ns": 2700.0, "baseline_median_ns": 13100.0, "speedup": 4.85, "mismatches": 0},
+    {"size_bin": "5K-10K bp", "count": 90, "hashrope_median_ns": 3150.0, "baseline_median_ns": 32600.0, "speedup": 10.35, "mismatches": 0},
+    {"size_bin": "10K-50K bp", "count": 276, "hashrope_median_ns": 3900.0, "baseline_median_ns": 98700.0, "speedup": 25.31, "mismatches": 0},
+    {"size_bin": "50K-100K bp", "count": 68, "hashrope_median_ns": 4450.0, "baseline_median_ns": 311500.0, "speedup": 70.00, "mismatches": 0},
+    {"size_bin": "100K-500K bp", "count": 48, "hashrope_median_ns": 5400.0, "baseline_median_ns": 702100.0, "speedup": 130.02, "mismatches": 0},
+    {"size_bin": ">500K bp", "count": 3, "hashrope_median_ns": 7700.0, "baseline_median_ns": 2977600.0, "speedup": 386.70, "mismatches": 0}
+  ],
+  "exon_results": [
+    {"size_bin": "<100 bp", "count": 1477, "hashrope_median_ns": 800.0, "baseline_median_ns": 400.0, "speedup": 0.50, "mismatches": 0},
+    {"size_bin": "100-500 bp", "count": 3043, "hashrope_median_ns": 1300.0, "baseline_median_ns": 700.0, "speedup": 0.54, "mismatches": 0},
+    {"size_bin": "500-1K bp", "count": 237, "hashrope_median_ns": 1800.0, "baseline_median_ns": 3100.0, "speedup": 1.72, "mismatches": 0},
+    {"size_bin": "1K-5K bp", "count": 331, "hashrope_median_ns": 2000.0, "baseline_median_ns": 8500.0, "speedup": 4.25, "mismatches": 0},
+    {"size_bin": "5K-10K bp", "count": 36, "hashrope_median_ns": 2000.0, "baseline_median_ns": 27500.0, "speedup": 13.75, "mismatches": 0},
+    {"size_bin": "10K-50K bp", "count": 3, "hashrope_median_ns": 2700.0, "baseline_median_ns": 63700.0, "speedup": 23.59, "mismatches": 0}
+  ]
+}

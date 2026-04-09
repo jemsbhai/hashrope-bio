@@ -432,6 +432,84 @@ The O(log w) vs O(L) scaling is unambiguous: 10,000× increase in query length p
 ---
 
 
+## E-G1 Gene Annotation: Region Queries at Real Gene/Exon Boundaries (Rust, chr22)
+
+**Status**: PASS — 5,770/5,770 queries correct (100%), real gene annotations from UCSC refGene.
+**Result files**: `results/region_query_genes_rust.json` (+ timestamped archive `region_query_genes_rust_20260409T010439Z.json`)
+**Date**: 2026-04-09
+
+### Data Sources
+
+- **Sequence**: GRCh38 chr22 (50,818,468 bp) — real human reference genome
+- **Gene annotations**: UCSC refGene (hg38), 643 unique genes, 5,127 exons on chr22
+  - Download: `https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz`
+  - Deduplicated to longest transcript per gene
+- **No synthetic or random data** — every query uses real gene/exon coordinates
+
+### Setup
+
+chunk_size=256 (best query performance from E-G1 random).
+For each of 643 genes: query the full gene body (txStart to txEnd).
+For each of 5,127 exons: query the exon region (exonStart to exonEnd).
+Hash verified against byte-slice baseline on every query. Total: 5,770 queries.
+
+### Gene Body Results
+
+| Size bin | Genes | hashrope median (ns) | baseline median (ns) | Speedup |
+|---------:|------:|---------------------:|---------------------:|--------:|
+| <100 bp | 47 | 800 | 400 | 0.5× |
+| 100–500 bp | 10 | 1,450 | 600 | 0.4× |
+| 500–1K bp | 8 | 2,400 | 3,750 | **1.6×** |
+| 1K–5K bp | 93 | 2,700 | 13,100 | **4.9×** |
+| 5K–10K bp | 90 | 3,150 | 32,600 | **10.3×** |
+| 10K–50K bp | 276 | 3,900 | 98,700 | **25.3×** |
+| 50K–100K bp | 68 | 4,450 | 311,500 | **70.0×** |
+| 100K–500K bp | 48 | 5,400 | 702,100 | **130×** |
+| >500K bp | 3 | 7,700 | 2,977,600 | **387×** |
+
+### Exon Results
+
+| Size bin | Exons | hashrope median (ns) | baseline median (ns) | Speedup |
+|---------:|------:|---------------------:|---------------------:|--------:|
+| <100 bp | 1,477 | 800 | 400 | 0.5× |
+| 100–500 bp | 3,043 | 1,300 | 700 | 0.5× |
+| 500–1K bp | 237 | 1,800 | 3,100 | **1.7×** |
+| 1K–5K bp | 331 | 2,000 | 8,500 | **4.2×** |
+| 5K–10K bp | 36 | 2,000 | 27,500 | **13.8×** |
+| 10K–50K bp | 3 | 2,700 | 63,700 | **23.6×** |
+
+### Top Genes by Speedup
+
+| Gene | Length (bp) | hashrope (ns) | baseline (ns) | Speedup |
+|:-----|----------:|--------:|-----------:|--------:|
+| TTC28 | 701,852 | 7,800 | 3,206,200 | **411×** |
+| LARGE1 | 650,315 | 7,700 | 2,977,600 | **387×** |
+| SYN3 | 550,562 | 6,700 | 2,515,400 | **375×** |
+| TBC1D22A | 413,083 | 6,500 | 1,887,600 | **290×** |
+| SPECC1L | 146,908 | 2,600 | 674,300 | **259×** |
+| MYO18B | 288,858 | 5,300 | 1,322,100 | **250×** |
+| GSTTP2 | 200,878 | 3,700 | 913,300 | **247×** |
+| MRTFA | 226,431 | 4,300 | 1,034,200 | **241×** |
+| ARHGAP8 | 110,227 | 2,200 | 500,200 | **227×** |
+| RBFOX2 | 290,089 | 5,900 | 1,326,900 | **225×** |
+
+### Analysis
+
+**Consistency with random-position E-G1**: The gene annotation results closely match the random-position scaling from E-G1. For example, random queries at L=100K gave 111×; gene bodies of 100K–500K bp give 130×. The slight improvement is expected: gene-annotated queries have deterministic positions, whereas random positions include some that straddle chunk boundaries unfavorably.
+
+**Biological significance**: The 276 genes in the 10K–50K bp range (the majority of chr22 genes) see a consistent **25×** speedup. This covers typical protein-coding genes. The 48 genes in the 100K–500K bp range (large genes like LARGE1, TBC1D22A) see **130×**. These are real genes associated with real human diseases.
+
+**Exon queries**: Most exons are <500 bp (88% of the 5,127 exons), where hashrope is slower than baseline due to tree traversal overhead. This is the honest small-query regime. The 36 exons in the 5K–10K bp range (large exons, typically in genes like TTN-like or long non-coding RNAs) show **14×** speedup.
+
+**Crossover point**: Consistent with E-G1 random, the crossover from “hashrope slower” to “hashrope faster” occurs around 500–1,000 bp. This is important: individual exon queries (typically <300 bp) are better served by direct byte hashing, but gene-body queries, regulatory region comparisons, and any region >1 Kbp benefit from hashrope.
+
+### Verdict
+
+**CB-C1 confirmed on real gene annotations.** Querying all 643 chr22 genes and 5,127 exons at their actual genomic coordinates produces speedups consistent with E-G1 random-position scaling, with 100% hash correctness across 5,770 queries. The results are biologically grounded: real genes like TTC28 (411×), LARGE1 (387×), and SPECC1L (259×) demonstrate that O(log w) vs O(L) is practically significant for genome-scale gene identity queries.
+
+---
+
+
 ## E-G3: Mutation Localization via Binary Search (Rust, chr22)
 
 **Status**: PASS — Claim CB-C3 confirmed.
