@@ -54,6 +54,9 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/hashrope_bio"]
 
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/CHANGELOG.md", "/LICENSE", "/pyproject.toml"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
