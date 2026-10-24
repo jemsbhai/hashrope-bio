@@ -413,7 +413,7 @@ fn get_environment() -> Vec<(String, String)> {
     if let Ok(output) = Command::new("rustc").arg("--version").output() {
         env_data.push(("rustc_version".into(), String::from_utf8_lossy(&output.stdout).trim().to_string()));
     }
-    env_data.push(("hashrope_crate_requirement".into(), "^0.3.3".into()));
+    env_data.push(("hashrope_crate_requirement".into(), "^0.3.4".into()));
     env_data.push(("language".into(), "rust".into()));
     env_data.push(("build_profile".into(), if cfg!(debug_assertions) { "debug" } else { "release" }.into()));
     env_data

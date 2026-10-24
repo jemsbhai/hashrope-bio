@@ -4,9 +4,17 @@ Computational biology applications of [hashrope](https://crates.io/crates/hashro
 Exact byte comparison for gene-level change detection, drug resistance screening,
 genomic region comparison, and tandem repeat analysis.
 
-## Exact comparison in 0.3.3
+## Synchronized 0.3.4 release
 
-This release requires Hashrope 0.3.3 or later in the 0.3 series. Fingerprint
+This version synchronizes the Python and Rust biology packages with core
+Hashrope 0.3.4. Biology's exact consumer algorithms are unchanged from 0.3.3.
+Version parity preserves correctness contracts and fingerprints; it does not
+imply equal performance across languages or workloads. See the
+[release scope and performance caveats](https://github.com/jemsbhai/hashrope/blob/master/releases/0.3.4/README.md).
+
+## Exact comparison
+
+This release requires Hashrope 0.3.4 or later in the 0.3 series. Fingerprint
 values/defaults are unchanged; equality, mutation and conservation decisions now
 verify actual bytes. Report hash fields are metadata, and gene/exon reports carry
 separate verified change flags. Manually constructing these reports requires
@@ -110,6 +118,6 @@ cargo bench
 
 MIT
 
-The Cargo dependency requires `hashrope = "0.3.3"`; the local path is only
+The Cargo dependency requires `hashrope = "0.3.4"`; the local path is only
 used for workspace development and is removed from the published manifest.
 Run `cargo test --lib --test exact_consumers --bins` for consumer regressions.
