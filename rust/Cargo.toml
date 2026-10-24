@@ -1,6 +1,6 @@
 [package]
 name = "hashrope-bio"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 authors = ["Muntaser Syed <muntaser@ieee.org>"]
 description = "Computational biology applications of hashrope — drug resistance panels, gene-level change detection, genomic region queries, tandem repeat analysis"
@@ -12,7 +12,7 @@ readme = "README.md"
 include = ["src/**/*", "benches/**/*", "Cargo.toml", "LICENSE", "README.md", "tests/**/*", "CHANGELOG.md"]
 
 [dependencies]
-hashrope = { version = "0.3.3", path = "../../../../packages/rust" }
+hashrope = { version = "0.3.4", path = "../../../../packages/rust" }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }

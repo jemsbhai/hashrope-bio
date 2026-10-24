@@ -4,9 +4,17 @@ Computational biology applications of [hashrope](https://github.com/jemsbhai/has
 Exact byte comparison for gene-level change detection, genomic region comparison,
 mutation localization, drug resistance screening, and tandem repeat compression.
 
-## Exact comparison in 0.3.3
+## Synchronized 0.3.4 release
 
-This release requires Hashrope 0.3.3 or later in the 0.3 series. Fingerprint
+This version synchronizes the Python and Rust biology packages with core
+Hashrope 0.3.4. Biology's exact consumer algorithms are unchanged from 0.3.3.
+Version parity preserves correctness contracts and fingerprints; it does not
+imply equal performance across languages or workloads. See the
+[release scope and performance caveats](https://github.com/jemsbhai/hashrope/blob/master/releases/0.3.4/README.md).
+
+## Exact comparison
+
+This release requires Hashrope 0.3.4 or later in the 0.3 series. Fingerprint
 values/defaults are unchanged; equality, mutation and conservation decisions now
 verify actual bytes. Report hash fields are metadata, and gene/exon reports carry
 separate verified change flags. Manually constructing these reports requires
@@ -26,7 +34,7 @@ it does not revalidate the older chromosome-scale fingerprint speedups below.
 ## Install
 
 ```bash
-pip install "hashrope-bio==0.3.3"
+pip install "hashrope-bio==0.3.4"
 ```
 
 For optional backends:

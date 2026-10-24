@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hashrope-bio"
-version = "0.3.3"
+version = "0.3.4"
 description = "Computational biology applications of hash rope data structures"
 readme = "README.md"
 license = "MIT"
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "hashrope>=0.3.3,<0.4",
+    "hashrope>=0.3.4,<0.4",
 ]
 
 [project.optional-dependencies]

@@ -185,11 +185,11 @@ dependencies = [
 
 [[package]]
 name = "hashrope"
-version = "0.3.3"
+version = "0.3.4"
 
 [[package]]
 name = "hashrope-bio"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "criterion",
  "hashrope",

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.4 — 2026-10-24
+
+- Synchronize Python/Rust biology packages with core Hashrope 0.3.4 and raise
+  their minimum core dependency accordingly.
+- Retain the exact consumer algorithms, byte semantics, fingerprint fields and
+  defaults introduced in 0.3.3; no new biology runtime algorithm is introduced.
+- Document [release parity and performance caveats](https://github.com/jemsbhai/hashrope/blob/master/releases/0.3.4/README.md).
+
 ## 0.3.3 — 2026-10-24
 
 - Require core Hashrope 0.3.3 and synchronize Python/Rust package versions.
