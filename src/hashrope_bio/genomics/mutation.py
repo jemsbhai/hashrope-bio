@@ -1,15 +1,11 @@
-"""Binary search mutation localization via substr_hash.
+"""Exact mutation localization using byte comparisons and shared structure.
 
-Given a reference rope and a sample rope known to differ,
-localize the mutation(s) in O(log N) hash comparisons where
-N is the region size — each comparison is O(log w).
-
-Total: O(log N · log w) for single mutation in N-bp region.
+Equal regions may require a full byte scan; fingerprints never prune changes.
 """
 
 from __future__ import annotations
 
-from hashrope import PolynomialHash, rope_substr_hash
+from hashrope import PolynomialHash, rope_range_equal, rope_range_lcp
 
 
 def localize_mutation(
@@ -20,39 +16,24 @@ def localize_mutation(
     h: PolynomialHash,
     min_block: int = 1,
 ) -> int | None:
-    """Binary search for a single mutation position.
+    """Return the first divergent position, or its binary-search block start.
 
-    Precondition: the region [start, start+length) is known to differ
-    between ref and sample (i.e., their substr_hashes are unequal).
-
-    Args:
-        ref_rope: Reference sequence rope.
-        sample_rope: Sample sequence rope (contains mutation).
-        start: Start of the search region (0-based).
-        length: Size of the search region in bytes.
-        h: Shared PolynomialHash instance.
-        min_block: Stop when region is this small (default: 1 = exact position).
-
-    Returns:
-        Position of the mutation (0-based), or None if regions are identical.
+    ``min_block=1`` gives an exact byte position. Larger values preserve the
+    prior binary partition boundaries. No differing-hash precondition applies.
     """
-    lo, hi = start, start + length
-
-    # Confirm the region actually differs
-    h_ref = rope_substr_hash(ref_rope, lo, hi - lo, h)
-    h_sam = rope_substr_hash(sample_rope, lo, hi - lo, h)
-    if h_ref == h_sam:
+    if min_block < 1:
+        raise ValueError("min_block must be at least 1")
+    common = rope_range_lcp(ref_rope, start, sample_rope, start, length)
+    if common == length:
         return None
-
+    position = start + common
+    lo, hi = start, start + length
     while hi - lo > min_block:
         mid = (lo + hi) // 2
-        h_ref_left = rope_substr_hash(ref_rope, lo, mid - lo, h)
-        h_sam_left = rope_substr_hash(sample_rope, lo, mid - lo, h)
-        if h_ref_left != h_sam_left:
+        if position < mid:
             hi = mid
         else:
             lo = mid
-
     return lo
 
 
@@ -80,6 +61,8 @@ def localize_all_mutations(
     Returns:
         List of (start, length) tuples identifying divergent regions.
     """
+    if min_block < 1:
+        raise ValueError("min_block must be at least 1")
     results: list[tuple[int, int]] = []
     _find_divergent(ref_rope, sample_rope, start, length, h, min_block, results)
     return results
@@ -95,11 +78,8 @@ def _find_divergent(
     results: list[tuple[int, int]],
 ) -> None:
     """Recursive helper for localize_all_mutations."""
-    h_ref = rope_substr_hash(ref_rope, start, length, h)
-    h_sam = rope_substr_hash(sample_rope, start, length, h)
-
-    if h_ref == h_sam:
-        return  # Identical — prune entire subtree
+    if rope_range_equal(ref_rope, start, sample_rope, start, length):
+        return  # Verified equal, including shared immutable ranges.
 
     if length <= min_block:
         results.append((start, length))

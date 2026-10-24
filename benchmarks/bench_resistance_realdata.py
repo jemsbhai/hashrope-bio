@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """E-D2 Real-Data Validation: hashrope resistance panel vs Sierra ground truth.
 
-Validates that hash-based codon comparison correctly identifies drug
+Validates that exact codon byte comparison correctly identifies drug
 resistance mutations in real HIV-1 patient sequences, using Stanford
 HIVDB Sierra as gold-standard ground truth.
 
@@ -31,9 +31,9 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 
 try:
-    from hashrope import PolynomialHash, Leaf, rope_concat, rope_substr_hash
+    from hashrope import PolynomialHash, Leaf, rope_concat, rope_range_equal
 except ImportError:
-    print("ERROR: hashrope package required. Install with: pip install hashrope")
+    print("ERROR: local exact-comparison Hashrope required. From code/: pip install -e ../../../packages/python")
     sys.exit(1)
 
 # --- Configuration ---
@@ -287,9 +287,8 @@ def validate_sequence(
             results[pos] = {"status": "truncated"}
             continue
 
-        ref_hash = rope_substr_hash(ref_rope, codon_offset_in_region, 3, h)
-        sample_hash = rope_substr_hash(sample_rope, codon_offset_in_region, 3, h)
-        hashrope_mismatch = (ref_hash != sample_hash)
+        hashrope_mismatch = not rope_range_equal(
+            ref_rope, codon_offset_in_region, sample_rope, codon_offset_in_region, 3)
 
         ref_codon = ref_region[codon_offset_in_region:codon_offset_in_region + 3]
         sample_codon = sample_bytes[codon_offset_in_region:codon_offset_in_region + 3]
@@ -297,6 +296,7 @@ def validate_sequence(
 
         results[pos] = {
             "status": "checked",
+            "comparison_mode": "exact_bytes",
             "ref_codon": ref_codon.decode("ascii"),
             "sample_codon": sample_codon.decode("ascii"),
             "hashrope_mismatch": hashrope_mismatch,

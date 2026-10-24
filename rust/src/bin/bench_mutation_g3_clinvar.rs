@@ -111,10 +111,9 @@ fn binary_search_mutation(
     let mut comparisons = 0u64;
     while hi - lo > 1 {
         let mid = (lo + hi) / 2;
-        let h_ref = arena.substr_hash(ref_rope, lo, mid - lo);
-        let h_sam = arena.substr_hash(sample_rope, lo, mid - lo);
+        let identical = arena.equal_range(ref_rope, lo, sample_rope, lo, mid - lo);
         comparisons += 1;
-        if h_ref != h_sam { hi = mid; } else { lo = mid; }
+        if !identical { hi = mid; } else { lo = mid; }
     }
     (lo, comparisons)
 }
@@ -373,4 +372,17 @@ fn days_to_ymd(mut days: u64) -> (u64, u64, u64) {
     let mut month = 1;
     for &d in md { if days < d { break; } days -= d; month += 1; }
     (year, month, days + 1)
+}
+
+#[cfg(test)]
+mod exact_search_tests {
+    use super::*;
+    #[test]
+    fn a_matching_hash_does_not_hide_the_first_difference() {
+        let mut arena = Arena::new();
+        let a = arena.from_bytes(&[0, 131, 0, 0]);
+        let b = arena.from_bytes(&[1, 0, 0, 0]);
+        assert_eq!(arena.hash(a), arena.hash(b));
+        assert_eq!(binary_search_mutation(&mut arena, a, b, 0, 4).0, 0);
+    }
 }

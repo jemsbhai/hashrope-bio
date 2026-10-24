@@ -1,8 +1,8 @@
 """MD trajectory loading and frame-level comparison via hash ropes.
 
 Serializes atomic coordinates (float32 × 3 × N_atoms) per frame
-into byte arrays, builds a rope of frames, and enables O(log w)
-frame identity testing via substr_hash.
+into byte arrays, builds a rope of frames, and enables exact bitwise
+frame comparison with shared-structure shortcuts.
 
 Requires: MDAnalysis, numpy
 """
@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hashrope import PolynomialHash, rope_substr_hash
+from hashrope import PolynomialHash, rope_range_equal
 
 
 def load_trajectory_to_rope(
@@ -48,7 +48,7 @@ def frames_identical(
     frame_size: int,
     h: PolynomialHash,
 ) -> bool:
-    """Test bitwise identity of two frames in O(log w).
+    """Test bitwise identity; independent frames can require a full byte scan.
 
     Args:
         rope: Pre-built trajectory rope.
@@ -65,6 +65,4 @@ def frames_identical(
         structural similarity (RMSD). Floating-point noise means
         "same conformation" may not produce identical bytes.
     """
-    h_i = rope_substr_hash(rope, frame_i * frame_size, frame_size, h)
-    h_j = rope_substr_hash(rope, frame_j * frame_size, frame_size, h)
-    return h_i == h_j
+    return rope_range_equal(rope, frame_i * frame_size, rope, frame_j * frame_size, frame_size)
