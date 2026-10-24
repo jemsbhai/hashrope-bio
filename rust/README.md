@@ -1,13 +1,31 @@
 # hashrope-bio
 
 Computational biology applications of [hashrope](https://crates.io/crates/hashrope) —
-O(log w) substring hashing for gene-level change detection, drug resistance screening,
+Exact byte comparison for gene-level change detection, drug resistance screening,
 genomic region comparison, and tandem repeat analysis.
+
+## Exact comparison in 0.3.3
+
+This release requires Hashrope 0.3.3 or later in the 0.3 series. Fingerprint
+values/defaults are unchanged; equality, mutation and conservation decisions now
+verify actual bytes. Report hash fields are metadata, and gene/exon reports carry
+separate verified change flags. Manually constructing these reports requires
+those flags rather than deriving them from hashes.
+
+Exact verification can scan an entire independent region; the core uses a
+bounded traversal and a comparison cache where needed. Shared ranges and periodic structure can be skipped after
+proof. Historical speedups and datasets below describe the earlier fingerprint
+experiments; they do not establish current exact-comparison performance or
+universal collision resistance. Historical result files have been preserved.
+
+See the workspace [exact-path optimization report](../../../../benchmarks/exact_optimization/README.md)
+for core comparison profiling and fresh consumer measurements, including their
+workload limits. Historical biology speedups below are not exact-query timings.
 
 ## Features
 
-- **Gene-level change detection**: Screen hundreds of genes between two genomes in O(G · log w) total time
-- **Drug resistance panels**: Check N known mutation sites in O(N · log w) via codon hash comparison
+- **Gene-level change detection**: Compare gene and exon bytes exactly with structural sharing shortcuts
+- **Drug resistance panels**: Compare actual codon bytes at N known mutation sites
 - **Pre-defined HIV-1 RT panels**: 23 NNRTI + NRTI resistance sites from Stanford HIVDB
 - **Gene annotation loading**: Parse UCSC refGene TSV for biologically meaningful queries
 
@@ -27,7 +45,7 @@ let mut arena = Arena::new();
 let ref_rope = arena.from_bytes(&ref_seq);
 let sample_rope = arena.from_bytes(&sample_seq);
 
-// Screen all genes — O(G · log w) total
+// Screen all genes using exact range comparisons
 let changed = screen_genes_single_arena(
     &mut arena, ref_rope, sample_rope, &genes, None,
 );
@@ -91,3 +109,7 @@ cargo bench
 ## License
 
 MIT
+
+The Cargo dependency requires `hashrope = "0.3.3"`; the local path is only
+used for workspace development and is removed from the published manifest.
+Run `cargo test --lib --test exact_consumers --bins` for consumer regressions.

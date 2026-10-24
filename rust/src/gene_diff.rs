@@ -1,13 +1,8 @@
-//! Gene-level change detection via hash comparison.
+//! Exact gene and exon change detection with fingerprints retained as metadata.
 //!
-//! Given two ropes (e.g., reference and patient genome) and a list of
-//! gene annotations, reports which genes and exons differ — in O(N · log w)
-//! total time, where N is the number of regions and w is the rope weight.
-//!
-//! # Two-pass architecture
-//!
-//! - **Pass 1 (screen)**: O(log w) hash comparison per region — identifies changes
-//! - **Pass 2 (detail)**: only changed regions need expensive byte-level analysis
+//! Independent equal regions can require full byte verification. Shared and
+//! repeated structure can be skipped after proof; there is no universal
+//! logarithmic exact-comparison guarantee.
 //!
 //! # Example
 //!
@@ -19,7 +14,7 @@
 //! let mut arena = Arena::new();
 //! let ref_rope = arena.from_bytes(b"ACGT...");
 //! let sample_rope = arena.from_bytes(b"ACGT...");
-//! let report = diff_genes(&mut arena, ref_rope, &mut arena, sample_rope, &genes, None);
+//! let report = diff_genes_single_arena(&mut arena, ref_rope, sample_rope, &genes, None, true);
 //! ```
 
 use std::fs::File;
@@ -82,11 +77,12 @@ pub struct ExonDiff {
     pub length: u64,
     pub ref_hash: u64,
     pub sample_hash: u64,
+    pub verified_changed: bool,
 }
 
 impl ExonDiff {
     pub fn changed(&self) -> bool {
-        self.ref_hash != self.sample_hash
+        self.verified_changed
     }
 }
 
@@ -98,12 +94,13 @@ pub struct GeneDiff {
     pub tx_length: u64,
     pub body_ref_hash: u64,
     pub body_sample_hash: u64,
+    pub verified_body_changed: bool,
     pub exon_diffs: Vec<ExonDiff>,
 }
 
 impl GeneDiff {
     pub fn body_changed(&self) -> bool {
-        self.body_ref_hash != self.body_sample_hash
+        self.verified_body_changed
     }
 
     pub fn changed_exons(&self) -> Vec<&ExonDiff> {
@@ -218,10 +215,10 @@ pub fn load_gene_regions<P: AsRef<Path>>(path: P) -> Result<Vec<GeneRegion>, Str
 
 /// Compare gene regions between two ropes using a single shared arena.
 ///
-/// For each gene, compares the gene body hash. If `include_exons` is true,
+/// For each gene, compares the actual gene body bytes. If `include_exons` is true,
 /// also compares each exon individually.
 ///
-/// Total cost: O((G + E) · log w) where G = genes, E = exons, w = rope weight.
+/// Fingerprints are reporting metadata; exact verification can scan a whole region.
 pub fn diff_genes_single_arena(
     arena: &mut Arena,
     ref_rope: Node,
@@ -254,6 +251,7 @@ pub fn diff_genes_single_arena(
                     length: exon.length(),
                     ref_hash: ex_ref,
                     sample_hash: ex_sample,
+                    verified_changed: !arena.equal_range(ref_rope, exon.start, sample_rope, exon.start, exon.length()),
                 })
             }).collect()
         } else {
@@ -266,6 +264,7 @@ pub fn diff_genes_single_arena(
             tx_length: gene.tx_length(),
             body_ref_hash: body_ref,
             body_sample_hash: body_sample,
+            verified_body_changed: !arena.equal_range(ref_rope, gene.tx_start, sample_rope, gene.tx_start, gene.tx_length()),
             exon_diffs,
         });
     }
@@ -307,6 +306,7 @@ pub fn diff_genes(
                 length: exon.length(),
                 ref_hash: ex_ref,
                 sample_hash: ex_sample,
+                verified_changed: !arena_ref.equal_range_across(ref_rope, exon.start, arena_sample, sample_rope, exon.start, exon.length()),
             })
         }).collect();
 
@@ -316,6 +316,7 @@ pub fn diff_genes(
             tx_length: gene.tx_length(),
             body_ref_hash: body_ref,
             body_sample_hash: body_sample,
+            verified_body_changed: !arena_ref.equal_range_across(ref_rope, gene.tx_start, arena_sample, sample_rope, gene.tx_start, gene.tx_length()),
             exon_diffs,
         });
     }
@@ -325,8 +326,7 @@ pub fn diff_genes(
 
 /// Quick screen: return names of genes whose bodies differ.
 ///
-/// Gene-body-only comparison (no exon detail). Fastest possible
-/// screening pass — O(G · log w) total.
+/// Gene-body-only exact comparison (no exon detail), with sharing shortcuts.
 pub fn screen_genes_single_arena(
     arena: &mut Arena,
     ref_rope: Node,
@@ -338,9 +338,9 @@ pub fn screen_genes_single_arena(
         if let Some(sl) = seq_len {
             if gene.tx_end > sl { return None; }
         }
-        let h_ref = arena.substr_hash(ref_rope, gene.tx_start, gene.tx_length());
-        let h_sample = arena.substr_hash(sample_rope, gene.tx_start, gene.tx_length());
-        if h_ref != h_sample { Some(gene.name.clone()) } else { None }
+        if !arena.equal_range(ref_rope, gene.tx_start, sample_rope, gene.tx_start, gene.tx_length()) {
+            Some(gene.name.clone())
+        } else { None }
     }).collect()
 }
 

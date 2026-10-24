@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hashrope-bio"
-version = "0.1.0"
+version = "0.3.3"
 description = "Computational biology applications of hash rope data structures"
 readme = "README.md"
 license = "MIT"
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "hashrope>=0.1.0",
+    "hashrope>=0.3.3,<0.4",
 ]
 
 [project.optional-dependencies]
@@ -56,3 +56,7 @@ packages = ["src/hashrope_bio"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# uv users can resolve the same source dependency as the documented editable install.
+[tool.uv.sources]
+hashrope = { path = "../../../packages/python", editable = true }

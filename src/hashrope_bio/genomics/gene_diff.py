@@ -1,12 +1,7 @@
-"""Gene-level change detection via hash comparison.
+"""Exact gene-level change detection, retaining region fingerprints as metadata.
 
-Given two ropes (e.g., reference and patient genome) and a list of
-gene annotations, reports which genes and exons differ — in O(N · log w)
-total time, where N is the number of regions and w is the rope weight.
-
-This implements a two-pass architecture:
-  Pass 1 (screen): O(log w) hash comparison per region — identifies changes
-  Pass 2 (detail): only changed regions need expensive byte-level analysis
+Shared and repeated regions can be skipped after exact proof. Independent equal
+regions may require reading every byte; no logarithmic exactness claim applies.
 
 Typical usage:
     ref_rope, h, _ = load_fasta_to_rope("reference.fa")
@@ -23,7 +18,7 @@ import csv
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from hashrope import PolynomialHash, rope_substr_hash
+from hashrope import PolynomialHash, rope_substr_hash, rope_range_equal
 
 
 # ---------------------------------------------------------------------------
@@ -68,10 +63,11 @@ class ExonDiff:
     exon: Exon
     ref_hash: int
     sample_hash: int
+    verified_changed: bool
 
     @property
     def changed(self) -> bool:
-        return self.ref_hash != self.sample_hash
+        return self.verified_changed
 
 
 @dataclass
@@ -80,11 +76,12 @@ class GeneDiff:
     gene: GeneRegion
     body_ref_hash: int
     body_sample_hash: int
+    verified_body_changed: bool
     exon_diffs: list[ExonDiff] = field(default_factory=list)
 
     @property
     def body_changed(self) -> bool:
-        return self.body_ref_hash != self.body_sample_hash
+        return self.verified_body_changed
 
     @property
     def changed_exons(self) -> list[ExonDiff]:
@@ -198,13 +195,12 @@ def diff_genes(
 ) -> GeneDiffReport:
     """Compare gene regions between two ropes.
 
-    For each gene, compares the gene body hash. If include_exons is True,
+    For each gene, compares the actual gene body bytes. If include_exons is True,
     also compares each exon individually (useful for pinpointing which
     exons changed within a changed gene).
 
-    The total cost is O((G + E) · log w) where G is the number of genes,
-    E is the number of exons, and w is the rope weight. This is dramatically
-    cheaper than O(G · L_avg) byte-by-byte comparison for large genes.
+    Fingerprints remain available as metadata. Exact verification can read
+    the full region when immutable structure cannot be shared.
 
     Args:
         ref_rope: Reference genome rope.
@@ -224,7 +220,7 @@ def diff_genes(
         if seq_len is not None and gene.tx_end > seq_len:
             continue
 
-        # Gene body comparison: O(log w) per rope
+        # Retain fingerprints independently of the exact comparison decision.
         body_ref = rope_substr_hash(ref_rope, gene.tx_start, gene.tx_length, h)
         body_sample = rope_substr_hash(sample_rope, gene.tx_start, gene.tx_length, h)
 
@@ -237,12 +233,14 @@ def diff_genes(
                     continue
                 ex_ref = rope_substr_hash(ref_rope, exon.start, exon.length, h)
                 ex_sample = rope_substr_hash(sample_rope, exon.start, exon.length, h)
-                exon_diffs.append(ExonDiff(exon=exon, ref_hash=ex_ref, sample_hash=ex_sample))
+                exon_diffs.append(ExonDiff(exon=exon, ref_hash=ex_ref, sample_hash=ex_sample,
+                    verified_changed=not rope_range_equal(ref_rope, exon.start, sample_rope, exon.start, exon.length)))
 
         gene_diffs.append(GeneDiff(
             gene=gene,
             body_ref_hash=body_ref,
             body_sample_hash=body_sample,
+            verified_body_changed=not rope_range_equal(ref_rope, gene.tx_start, sample_rope, gene.tx_start, gene.tx_length),
             exon_diffs=exon_diffs,
         ))
 
@@ -259,8 +257,8 @@ def screen_genes(
 ) -> list[str]:
     """Quick screen: return names of genes whose bodies differ.
 
-    Gene-body-only comparison (no exon detail). Fastest possible
-    screening pass — O(G · log w) total.
+    Gene-body-only exact comparison (no exon detail). Independent equal
+    regions can require reading every byte.
 
     Args:
         ref_rope: Reference genome rope.
@@ -270,14 +268,12 @@ def screen_genes(
         seq_len: If known, skip genes beyond this position.
 
     Returns:
-        List of gene names where the body hash differs.
+        List of gene names whose actual body bytes differ.
     """
     changed = []
     for gene in genes:
         if seq_len is not None and gene.tx_end > seq_len:
             continue
-        h_ref = rope_substr_hash(ref_rope, gene.tx_start, gene.tx_length, h)
-        h_sample = rope_substr_hash(sample_rope, gene.tx_start, gene.tx_length, h)
-        if h_ref != h_sample:
+        if not rope_range_equal(ref_rope, gene.tx_start, sample_rope, gene.tx_start, gene.tx_length):
             changed.append(gene.name)
     return changed

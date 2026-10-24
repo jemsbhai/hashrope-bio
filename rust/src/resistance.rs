@@ -1,8 +1,4 @@
-//! Drug resistance mutation panel checking via substr_hash.
-//!
-//! Checks N known resistance sites by comparing codon hashes between
-//! a reference and sample rope. Each check is a single `substr_hash`
-//! call at O(log w).
+//! Drug resistance panels compare exact codon bytes and retain fingerprints.
 
 use hashrope::Arena;
 use hashrope::rope::Node;
@@ -29,7 +25,7 @@ pub struct PanelResult {
 
 /// Check all sites in a resistance panel.
 ///
-/// For each site, compares the 3-byte codon hash at that position
+/// For each site, compares the actual 3-byte codon at that position
 /// between reference and sample ropes.
 pub fn check_resistance_panel(
     arena_ref: &mut Arena,
@@ -47,7 +43,7 @@ pub fn check_resistance_panel(
             position: site.position,
             ref_hash,
             sample_hash,
-            is_mutant: ref_hash != sample_hash,
+            is_mutant: !arena_ref.equal_range_across(rope_ref, offset, arena_sample, rope_sample, offset, 3),
         });
     }
     results
@@ -69,7 +65,7 @@ pub fn check_panel_single_arena(
             position: site.position,
             ref_hash,
             sample_hash,
-            is_mutant: ref_hash != sample_hash,
+            is_mutant: !arena.equal_range(rope_ref, offset, rope_sample, offset, 3),
         });
     }
     results

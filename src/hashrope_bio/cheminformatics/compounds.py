@@ -1,54 +1,61 @@
-"""Chemical compound exact lookup via polynomial hashing.
+"""Exact lookup of serialized canonical compounds using verified hash buckets.
 
-Builds a hash index over canonical SMILES/InChI strings for O(1)
-exact compound identity testing. Not a similarity tool — use RDKit
-fingerprints + Tanimoto for similarity search.
-
-Requires: rdkit (optional, for canonicalization)
+Fingerprints choose candidate buckets; retained bytes establish identity. This
+compares canonical encodings, not chemical equivalence or structural similarity.
 """
-
 from __future__ import annotations
 
 from pathlib import Path
-
 from hashrope import PolynomialHash
+
+
+class CompoundIndex(dict[int, list[int]]):
+    """Candidate buckets plus owned bytes needed for exact verification."""
+
+    def __init__(self, h: PolynomialHash) -> None:
+        super().__init__()
+        self.profile = (h.prime, h.base)
+        self.records: dict[int, bytes] = {}
 
 
 def build_compound_index(
     smiles_file: str | Path,
     h: PolynomialHash | None = None,
-) -> dict[int, list[int]]:
-    """Build a hash-based index from a SMILES file.
+) -> CompoundIndex:
+    """Index one canonical encoding per line, optionally followed by a tab/ID.
 
-    Args:
-        smiles_file: Path to a file with one SMILES per line
-                     (optionally tab-separated: SMILES\\tID).
-        h: PolynomialHash instance. Uses default if None.
-
-    Returns:
-        Dict mapping polynomial_hash(SMILES) -> list of line indices.
-        Multiple entries per hash indicates a collision (expected: ~0 for <10M compounds).
+    All candidates and duplicate records are retained. Returned IDs are zero-
+    based physical line indices; empty lines are skipped. Input canonicalization
+    remains the caller's responsibility. No text decoding changes the bytes.
     """
-    raise NotImplementedError("TODO: implement compound index builder")
+    h = h if h is not None else PolynomialHash()
+    index = CompoundIndex(h)
+    with open(smiles_file, "rb") as stream:
+        for line_number, line in enumerate(stream):
+            encoding = line.rstrip(b"\r\n").split(b"\t", 1)[0]
+            if not encoding:
+                continue
+            index.records[line_number] = encoding
+            index.setdefault(h.hash(encoding), []).append(line_number)
+    return index
 
 
 def lookup_compound(
     query_smiles: bytes,
-    index: dict[int, list[int]],
+    index: CompoundIndex,
     h: PolynomialHash,
 ) -> list[int]:
-    """Look up a compound by exact SMILES hash match.
+    """Return only candidates whose retained canonical encoding equals query.
 
-    Args:
-        query_smiles: Canonical SMILES as bytes.
-        index: Pre-built hash index from build_compound_index.
-        h: Same PolynomialHash used to build the index.
-
-    Returns:
-        List of matching line indices (usually 0 or 1 entries).
+    Legacy hash-only dictionaries cannot establish identity and are rejected;
+    rebuild them with ``build_compound_index`` to retain verification bytes.
     """
-    query_hash = h.hash(query_smiles)
-    return index.get(query_hash, [])
+    if not isinstance(index, CompoundIndex):
+        raise ValueError("Exact lookup requires retained bytes; rebuild with build_compound_index")
+    if index.profile != (h.prime, h.base):
+        raise ValueError("Compound index and query hash profiles differ")
+    query = bytes(query_smiles)
+    return [row for row in index.get(h.hash(query), []) if index.records[row] == query]
 
 
 def canonicalize_smiles(smiles: str) -> str | None:

@@ -1,7 +1,7 @@
-//! E-G3: Mutation Localization via Binary Search (Rust)
+//! E-G3: Mutation Localization via Exact Range Binary Search (Rust)
 //!
 //! Introduces synthetic SNPs into chr22, then uses binary search via
-//! substr_hash to pinpoint mutation positions. Measures comparison count
+//! exact range comparisons to pinpoint mutation positions. Measures comparison count
 //! and wall-clock time vs linear scan baseline.
 //!
 //! Note: chr22 contains large N-runs (centromere/telomere). Mutations are
@@ -153,10 +153,9 @@ fn binary_search_mutation(
 
     while hi - lo > 1 {
         let mid = (lo + hi) / 2;
-        let h_ref = arena.substr_hash(ref_rope, lo, mid - lo);
-        let h_sam = arena.substr_hash(sample_rope, lo, mid - lo);
+        let identical = arena.equal_range(ref_rope, lo, sample_rope, lo, mid - lo);
         comparisons += 1;
-        if h_ref != h_sam {
+        if !identical {
             hi = mid;
         } else {
             lo = mid;
@@ -414,7 +413,7 @@ fn get_environment() -> Vec<(String, String)> {
     if let Ok(output) = Command::new("rustc").arg("--version").output() {
         env_data.push(("rustc_version".into(), String::from_utf8_lossy(&output.stdout).trim().to_string()));
     }
-    env_data.push(("hashrope_crate_version".into(), "0.2.1".into()));
+    env_data.push(("hashrope_crate_requirement".into(), "^0.3.3".into()));
     env_data.push(("language".into(), "rust".into()));
     env_data.push(("build_profile".into(), if cfg!(debug_assertions) { "debug" } else { "release" }.into()));
     env_data
@@ -462,7 +461,7 @@ fn main() {
         std::process::exit(1);
     }
 
-    eprintln!("hashrope-bio E-G3 (Rust): Mutation Localization via Binary Search");
+    eprintln!("hashrope-bio E-G3 (Rust): Mutation Localization via Exact Range Binary Search");
     eprintln!("Build profile: {}", if cfg!(debug_assertions) { "debug" } else { "release" });
     eprintln!("FASTA: {}", fasta_path);
     eprintln!("Chunk size: {}", CHUNK_SIZE);
@@ -538,5 +537,18 @@ fn main() {
         eprintln!("\n  Results saved:");
         eprintln!("    Latest:  {}", latest);
         eprintln!("    Archive: {}", archive);
+    }
+}
+
+#[cfg(test)]
+mod exact_search_tests {
+    use super::*;
+    #[test]
+    fn a_matching_hash_does_not_hide_the_first_difference() {
+        let mut arena = Arena::new();
+        let a = arena.from_bytes(&[0, 131, 0, 0]);
+        let b = arena.from_bytes(&[1, 0, 0, 0]);
+        assert_eq!(arena.hash(a), arena.hash(b));
+        assert_eq!(binary_search_mutation(&mut arena, a, b, 0, 4).0, 0);
     }
 }

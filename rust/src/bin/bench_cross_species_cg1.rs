@@ -6,7 +6,7 @@
 //! For each gene:
 //!   1. Find overlapping alignment blocks
 //!   2. Build hashrope for both human and chimp aligned sequences
-//!   3. Compare full-sequence hashes (O(log w) each)
+//!   3. Compare full-sequence bytes exactly (shared structure can be skipped)
 //!   4. For diverged genes: binary search to localize first divergence
 //!   5. Time hashrope vs linear byte baseline
 //!
@@ -287,9 +287,7 @@ fn main() {
         let mut arena = Arena::new();
         let h_rope = build_rope(&mut arena, &human_seq);
         let c_rope = build_rope(&mut arena, &chimp_seq);
-        let h_hash = arena.substr_hash(h_rope, 0, aligned_len as u64);
-        let c_hash = arena.substr_hash(c_rope, 0, aligned_len as u64);
-        let is_conserved = h_hash == c_hash;
+        let is_conserved = arena.equal(h_rope, c_rope);
         let hashrope_screen_ns = t0.elapsed().as_nanos() as u64;
 
         // --- Byte baseline ---
@@ -317,17 +315,16 @@ fn main() {
         } else {
             diverged_count += 1;
 
-            // Binary search for first divergence
+            // Binary search using exact range comparisons for first divergence
             let t0 = Instant::now();
             let mut lo = 0u64;
             let mut hi = aligned_len as u64;
             let mut comps = 0u64;
             while hi - lo > 1 {
                 let mid = (lo + hi) / 2;
-                let hh = arena.substr_hash(h_rope, lo, mid - lo);
-                let ch = arena.substr_hash(c_rope, lo, mid - lo);
+                let identical = arena.equal_range(h_rope, lo, c_rope, lo, mid - lo);
                 comps += 1;
-                if hh != ch { hi = mid; } else { lo = mid; }
+                if !identical { hi = mid; } else { lo = mid; }
             }
             search_ns = t0.elapsed().as_nanos() as u64;
             search_comparisons = comps;

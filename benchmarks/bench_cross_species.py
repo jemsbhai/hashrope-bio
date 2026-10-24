@@ -5,7 +5,7 @@ Uses hashrope to screen 643 chr22 genes for human-chimp divergence using
 the UCSC LASTZ pairwise alignment. For each gene:
   1. Find alignment blocks overlapping the gene
   2. Build hashrope for human and chimp aligned sequences
-  3. Compare hashes: identical = conserved, different = diverged
+  3. Compare bytes exactly: identical = conserved, different = diverged
   4. For diverged genes: binary search to localize first divergence point
   5. Compare speedup vs linear byte-by-byte baseline
 
@@ -25,9 +25,9 @@ from pathlib import Path
 from dataclasses import dataclass
 
 try:
-    from hashrope import PolynomialHash, Leaf, rope_concat, rope_substr_hash
+    from hashrope import PolynomialHash, Leaf, rope_concat, rope_range_equal
 except ImportError:
-    print("ERROR: hashrope package required. Install with: pip install hashrope")
+    print("ERROR: local exact-comparison Hashrope required. From code/: pip install -e ../../../packages/python")
     sys.exit(1)
 
 CODE_DIR = Path(__file__).parent.parent
@@ -200,10 +200,8 @@ def compare_gene(human_seq: str, chimp_seq: str, h: PolynomialHash) -> dict:
     human_rope = _build_rope(human_bytes, CHUNK_SIZE, h)
     chimp_rope = _build_rope(chimp_bytes, CHUNK_SIZE, h)
 
-    # Full-sequence hash comparison
-    human_hash = rope_substr_hash(human_rope, 0, seq_len, h)
-    chimp_hash = rope_substr_hash(chimp_rope, 0, seq_len, h)
-    is_conserved = (human_hash == chimp_hash)
+    # Exact full-sequence comparison; no fingerprint proves identity.
+    is_conserved = rope_range_equal(human_rope, 0, chimp_rope, 0, seq_len)
     hashrope_ns = time.perf_counter_ns() - t0
 
     # --- Byte baseline ---
@@ -216,6 +214,7 @@ def compare_gene(human_seq: str, chimp_seq: str, h: PolynomialHash) -> dict:
         f"Hash mismatch! hashrope={is_conserved}, bytes={byte_match}"
 
     result = {
+        "comparison_mode": "exact_bytes",
         "seq_len": seq_len,
         "is_conserved": is_conserved,
         "hashrope_ns": hashrope_ns,
@@ -229,10 +228,9 @@ def compare_gene(human_seq: str, chimp_seq: str, h: PolynomialHash) -> dict:
         comparisons = 0
         while lo < hi - 1:
             mid = (lo + hi) // 2
-            h_hash = rope_substr_hash(human_rope, lo, mid - lo, h)
-            c_hash = rope_substr_hash(chimp_rope, lo, mid - lo, h)
+            identical = rope_range_equal(human_rope, lo, chimp_rope, lo, mid - lo)
             comparisons += 1
-            if h_hash != c_hash:
+            if not identical:
                 hi = mid
             else:
                 lo = mid

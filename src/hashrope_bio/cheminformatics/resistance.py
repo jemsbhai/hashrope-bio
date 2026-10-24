@@ -1,15 +1,10 @@
-"""Drug resistance mutation panel checking via substr_hash.
-
-Given a reference gene rope and a sample gene rope, check N known
-resistance mutation sites in O(N · log w) total time. Each site
-is a codon (3 bp) compared via substr_hash.
-"""
+"""Drug resistance panels compare exact codon bytes and retain fingerprints."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from hashrope import PolynomialHash, rope_substr_hash
+from hashrope import PolynomialHash, rope_substr_hash, rope_range_equal
 
 
 @dataclass
@@ -29,7 +24,7 @@ class PanelResult:
     site: ResistanceSite
     ref_hash: int
     sample_hash: int
-    is_mutant: bool        # True if hashes differ (potential resistance)
+    is_mutant: bool        # True if codon bytes differ (potential resistance)
 
 
 def check_resistance_panel(
@@ -41,8 +36,8 @@ def check_resistance_panel(
 ) -> list[PanelResult]:
     """Check all sites in a resistance panel.
 
-    For each site, compares the codon hash at that position between
-    reference and sample. Hash mismatch = potential resistance mutation.
+    For each site, compares actual codon bytes. Fingerprints are reporting
+    metadata; matching hashes never establish an unchanged codon.
 
     Args:
         ref_rope: Reference gene sequence rope.
@@ -66,7 +61,7 @@ def check_resistance_panel(
             site=site,
             ref_hash=ref_hash,
             sample_hash=sample_hash,
-            is_mutant=(ref_hash != sample_hash),
+            is_mutant=not rope_range_equal(ref_rope, nt_offset, sample_rope, nt_offset, codon_size),
         ))
 
     return results
